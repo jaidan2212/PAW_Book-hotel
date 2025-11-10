@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="assets/css/style.css">
+
+
 <?php
 require_once 'config.php';
 

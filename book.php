@@ -1,37 +1,53 @@
-<?php
-require_once 'functions.php';
-
-$rooms = getRooms();
-$selected = null;
-if (isset($_GET['room_id'])) {
-    $selected = getRoomById((int)$_GET['room_id']);
-}
-?>
-<!doctype html>
+<?php require_once 'functions.php'; $rooms = getRooms(); ?>
+<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>Booking</title></head>
+<head>
+<link rel="stylesheet" href="assets/css/style.css">
+<title>Booking</title>
+</head>
 <body>
-  <h2>Buat Booking</h2>
-  <form method="post" action="process_booking.php">
-    <label>Nama Pelanggan:<br><input type="text" name="customer_name" required></label><br><br>
-    <label>Email:<br><input type="email" name="customer_email"></label><br><br>
 
-    <label>Pilih Kamar:<br>
+<div class="container">
+  <h2>📝 Form Booking</h2>
+
+  <form action="process_booking.php" method="post">
+    <div class="mb-3">
+      <label>Nama Pelanggan</label>
+      <input type="text" name="customer_name" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Email (Opsional)</label>
+      <input type="email" name="customer_email">
+    </div>
+
+    <div class="mb-3">
+      <label>Pilih Kamar</label>
       <select name="room_id" required>
         <option value="">-- pilih --</option>
         <?php foreach($rooms as $r): ?>
-        <option value="<?= $r['id'] ?>" <?= ($selected && $selected['id']==$r['id'])?'selected':'' ?>>
-          <?= htmlspecialchars($r['room_number'].' - '.$r['type'].' ('.number_format($r['price'],0,',','.').')') ?>
+        <option value="<?= $r['id'] ?>">
+          <?= $r['room_number']." - ".$r['type']." (Rp ".number_format($r['price'],0,',','.').")" ?>
         </option>
         <?php endforeach; ?>
       </select>
-    </label><br><br>
+    </div>
 
-    <label>Check-in:<br><input type="date" name="checkin_date" required></label><br><br>
-    <label>Check-out:<br><input type="date" name="checkout_date" required></label><br><br>
+    <div class="mb-3">
+      <label>Check-in</label>
+      <input type="date" name="checkin_date" required>
+    </div>
 
-    <button type="submit">Pesan Sekarang</button>
+    <div class="mb-3">
+      <label>Check-out</label>
+      <input type="date" name="checkout_date" required>
+    </div>
+
+    <button class="btn-submit">Simpan & Lanjut</button>
   </form>
-  <p><a href="index.php">Kembali</a></p>
+
+  <a href="index.php" class="btn btn-secondary">← Kembali</a>
+</div>
+
 </body>
 </html>
