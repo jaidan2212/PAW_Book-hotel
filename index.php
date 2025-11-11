@@ -1,31 +1,70 @@
-<?php require_once 'functions.php'; $rooms = getRooms(); ?>
+<?php 
+require_once 'functions.php'; 
+$rooms = getRooms(); 
+?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<link rel="stylesheet" href="assets/css/style.css">
-<title>Daftar Kamar</title>
+    <meta charset="UTF-8">
+    <title>Booking Hotel | Our Rooms</title>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<div class="container">
-  <h1>🏨 Daftar Kamar</h1>
+<!-- ===== NAVBAR ===== -->
+<header>
+    <div class="navbar">
+        <div class="logo">Booking Hotel</div>
+        <nav>
+            <a href="#">Rooms</a>
+            <a href="#">Facilities</a>
+            <a href="#">Contact us</a>
+            <a href="#">About</a>
+        </nav>
+        <div class="auth">
+            <button class="btn login">Login</button>
+            <button class="btn register">Register</button>
+        </div>
+    </div>
+</header>
 
-  <a href="book.php" class="btn btn-primary">+ Buat Booking</a>
-  <a href="report.php" class="btn btn-secondary">📊 Laporan</a>
+<!-- ===== MAIN SECTION ===== -->
+<section class="rooms-section">
+    <h1>OUR ROOMS</h1>
+    <div class="rooms-container">
+        <?php $i = 1; foreach ($rooms as $r): ?>
+            <div class="room-card">
+                <img src="assets/images/<?= $r['image'] ?? 'Single Bad.jpg' ?>" alt="<?= $r['type'] ?>">
+                <div class="room-info">
+                    <h2><?= htmlspecialchars($r['type']) ?></h2>
+                    <p class="price">Rp <?= number_format($r['price'], 0, ',', '.') ?> per night</p>
 
-  <table>
-    <tr><th>No</th><th>Kamar</th><th>Tipe</th><th>Harga</th><th></th></tr>
-    <?php $i=1; foreach($rooms as $r): ?>
-    <tr>
-      <td><?= $i++ ?></td>
-      <td><?= $r['room_number'] ?></td>
-      <td><?= $r['type'] ?></td>
-      <td>Rp <?= number_format($r['price'],0,',','.') ?></td>
-      <td><a class="btn btn-primary" href="book.php?room_id=<?= $r['id'] ?>">Booking</a></td>
-    </tr>
-    <?php endforeach; ?>
-  </table>
-</div>
+                    <h3>Features</h3>
+                    <div class="tags">
+                        <span class="tag">bedroom</span>
+                        <span class="tag">balcony</span>
+                        <span class="tag">kitchen</span>
+                    </div>
+
+                    <h3>Facilities</h3>
+                    <div class="tags">
+                        <span class="tag">Wifi</span>
+                        <span class="tag">Air conditioner</span>
+                        <span class="tag">Room Heater</span>
+                        <span class="tag">Geyser</span>
+                    </div>
+
+                    <a href="book.php?room_id=<?= $r['id'] ?>" class="btn-book">Book Now</a>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <p>© 2025 Booking Hotel</p>
+</footer>
 
 </body>
 </html>
