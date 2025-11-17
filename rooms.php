@@ -30,7 +30,7 @@ $rooms = getRooms();
     <div class="rooms-container">
         <?php foreach ($rooms as $r): ?>
             <div class="room-card">
-                <img src="assets/images/<?= $r['image'] ?? 'default.jpg' ?>" alt="<?= $r['type'] ?>">
+                <img src="assets/images/room1.jpg" alt="Room 1">
                 <div class="room-info">
                     <h2><?= htmlspecialchars($r['type']) ?></h2>
                     <p class="price">Rp <?= number_format($r['price'], 0, ',', '.') ?> / night</p>
