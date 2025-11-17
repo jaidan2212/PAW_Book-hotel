@@ -16,7 +16,7 @@ $rooms = getRooms();
         <div class="logo">Booking Hotel</div>
 
         <nav>
-            <a href="#">Rooms</a>
+            <a href="rooms.php">Rooms</a>
             <a href="#">Facilities</a>
             <a href="#">Contact us</a>
             <a href="#">About</a>
