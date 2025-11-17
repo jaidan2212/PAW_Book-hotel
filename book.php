@@ -7,20 +7,30 @@
 </head>
 <body>
 
+<?php
+session_start();
+if(!isset($_SESSION['user'])){
+    header("Location: login.php");
+    exit;
+}
+?>
+
+
 <div class="container">
-  <h2>📝 Form Booking</h2>
+  <h2>Form Booking</h2>
 
   <form action="process_booking.php" method="post">
     <div class="mb-3">
       <label>Nama Pelanggan</label>
       <input type="text" name="customer_name" required>
     </div>
+<br>
 
     <div class="mb-3">
       <label>Email (Opsional)</label>
       <input type="email" name="customer_email">
     </div>
-
+<br>
     <div class="mb-3">
       <label>Pilih Kamar</label>
       <select name="room_id" required>
@@ -32,20 +42,20 @@
         <?php endforeach; ?>
       </select>
     </div>
-
+<br>
     <div class="mb-3">
       <label>Check-in</label>
       <input type="date" name="checkin_date" required>
     </div>
-
+<br>
     <div class="mb-3">
       <label>Check-out</label>
       <input type="date" name="checkout_date" required>
     </div>
-
+<br>
     <button class="btn-submit">Simpan & Lanjut</button>
   </form>
-
+<br>
   <a href="index.php" class="btn btn-secondary">← Kembali</a>
 </div>
 

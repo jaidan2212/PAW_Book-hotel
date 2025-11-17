@@ -11,24 +11,29 @@ $rooms = getRooms();
 </head>
 <body>
 
-<!-- ===== NAVBAR ===== -->
 <header>
     <div class="navbar">
         <div class="logo">Booking Hotel</div>
+
         <nav>
             <a href="#">Rooms</a>
             <a href="#">Facilities</a>
             <a href="#">Contact us</a>
             <a href="#">About</a>
         </nav>
+
         <div class="auth">
-            <button class="btn login">Login</button>
-            <button class="btn register">Register</button>
+            <?php if(isset($_SESSION['user'])): ?>
+                <a href="logout.php" class="btn logout">Logout</a>
+            <?php else: ?>
+                <a href="login.php" class="btn login">Login</a>
+                <a href="#" class="btn register">Register</a>
+            <?php endif; ?>
         </div>
     </div>
 </header>
 
-<!-- ===== MAIN SECTION ===== -->
+
 <section class="rooms-section">
     <h1>OUR ROOMS</h1>
     <div class="rooms-container">
@@ -61,7 +66,6 @@ $rooms = getRooms();
     </div>
 </section>
 
-<!-- ===== FOOTER ===== -->
 <footer>
     <p>© 2025 Booking Hotel</p>
 </footer>

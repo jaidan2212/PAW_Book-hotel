@@ -61,3 +61,10 @@ try {
     $mysqli->rollback();
     die("Gagal menyimpan booking: " . $e->getMessage());
 }
+
+session_start();
+if(!isset($_SESSION['user'])){
+    header("Location: login.php");
+    exit;
+}
+?>

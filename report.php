@@ -1,11 +1,9 @@
 <?php
 require_once 'db.php';
 
-// Data booking
 $res = $mysqli->query("SELECT * FROM bookings ORDER BY created_at DESC");
 $bookings = $res->fetch_all(MYSQLI_ASSOC);
 
-// Total pendapatan
 $sum = $mysqli->query("SELECT SUM(amount) as total FROM payments")->fetch_assoc()['total'] ?? 0;
 ?>
 <!DOCTYPE html>
@@ -18,7 +16,7 @@ $sum = $mysqli->query("SELECT SUM(amount) as total FROM payments")->fetch_assoc(
 
 <div class="container">
 
-  <h2>📊 Laporan Transaksi</h2>
+  <h2>Laporan Transaksi</h2>
 
   <p><strong>Total Pendapatan:</strong> Rp <?= number_format($sum,0,',','.') ?></p>
 

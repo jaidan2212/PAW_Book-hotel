@@ -7,7 +7,6 @@ if (!$booking_id) {
     exit;
 }
 
-// Ambil data booking
 $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE id=?");
 $stmt->bind_param('i', $booking_id);
 $stmt->execute();
@@ -17,7 +16,6 @@ if (!$booking) {
     exit;
 }
 
-// Ambil detail kamar
 $det = $mysqli->prepare("
     SELECT br.*, r.room_number, r.type 
     FROM booking_rooms br 
@@ -38,7 +36,7 @@ $details = $det->get_result()->fetch_all(MYSQLI_ASSOC);
 
 <div class="container">
 
-  <h2>💳 Pembayaran</h2>
+  <h2>Pembayaran</h2>
   <p><strong>Kode Booking:</strong> <?= $booking['booking_code'] ?></p>
   <p><strong>Nama:</strong> <?= $booking['customer_name'] ?></p>
   <p><strong>Tanggal:</strong> <?= $booking['checkin_date'] ?> → <?= $booking['checkout_date'] ?></p>
