@@ -10,149 +10,229 @@ try {
     $hasStock = false;
 }
 ?>
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Booking Hotel | Our Rooms</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    </head>
-    <body class="bg-light">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Hotel | Home</title>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">Booking Hotel</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="user/rooms.php">Rooms</a></li>
-                    <li class="nav-item"><a class="nav-link" href="user/facilities.php">Facilities</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Contact us</a></li>
-                </ul>
-                <div class="d-flex">
-                    <?php if(isset($_SESSION['user'])): ?>
-                        <a href="logout.php" class="btn btn-outline-danger">Logout</a>
-                    <?php else: ?>
-                        <a href="login.php" class="btn btn-primary me-2">Login</a>
-                    <?php endif; ?>
-                </div>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+
+    <style>
+        body { font-family: 'Montserrat', sans-serif; }
+       .hero-section {
+            height: 85vh;
+            background: url('assets/images/about.jpg') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+        .hero-section {
+            margin-top: 90px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<nav class="navbar navbar-expand-lg position-absolute w-100"
+     style="background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(5px); z-index: 999;">
+  <div class="container">
+
+  
+    <a class="navbar-brand" href="#">
+            <img src="assets/images/logo.png" alt="Logo" width="90">
+        </a>
+
+        
+    <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+
+      <ul class="navbar-nav">
+
+      
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="menuDropdown" role="button" data-bs-toggle="dropdown">
+            Menu
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Rooms</a></li>
+            <li><a class="dropdown-item" href="#">Contact</a></li>
+            <li><a class="dropdown-item" href="#">About Us</a></li>
+            <li><a class="dropdown-item" href="#">Login</a></li>
+          </ul>
+        </li>
+
+      </ul>
+
+    </div>
+
+  </div>
+</nav>
+
+<section class="hero-section">
+    <div class="hero-overlay"></div>
+
+    <div class="container hero-content text-white">
+        <h1 class="display-4 fw-bold">Experience Luxury & Comfort</h1>
+        <p class="fs-5 mb-4">Your perfect stay starts here — book your dream vacation now.</p>
+
+        <a href="#rooms" class="btn btn-light btn-lg px-4">Explore Rooms</a>
+    </div>
+</section>
+
+<div class="container mt-5">
+    <div class="card p-4 shadow-lg">
+        <form class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Check-in</label>
+                <input type="date" class="form-control">
             </div>
-        </div>
-    </nav>
-
-    <main class="container py-4">
-        <h1 class="mb-4">Our Rooms</h1>
-
-        <?php if (!$hasStock): ?>
-            <div class="alert alert-warning">
-                Kolom <strong>stock</strong> belum ada di database — itu penyebab hanya muncul 1 pilihan.
-                <div class="mt-2">
-                    <a class="btn btn-sm btn-primary" href="user/migrate_add_stock_column.php">Jalankan migrasi stock</a>
-                    <a class="btn btn-sm btn-secondary" href="user/migrate_set_stock_demo.php?n=5">Set stock demo (n=5)</a>
-                </div>
-                <div class="mt-2 small text-muted">Jika kamu menggunakan phpMyAdmin, kamu juga bisa menjalankan: <code>ALTER TABLE rooms ADD COLUMN stock INT NOT NULL DEFAULT 1;</code></div>
+            <div class="col-md-3">
+                <label class="form-label">Check-out</label>
+                <input type="date" class="form-control">
             </div>
-        <?php endif; ?>
 
-        <div class="row g-4">
-            <?php foreach ($rooms as $r): ?>
-                <?php
-                    $stock = isset($r['stock']) ? (int)$r['stock'] : 0;
-                    if ($stock > 1) {
-                        $max = min($stock, 20);
-                        for ($i = 1; $i <= $max; $i++):
-                ?>
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm">
-                        <img src="assets/images/room1.jpg" class="card-img-top" alt="Room">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title"><?= htmlspecialchars($r['room_number'] . ' - ' . $r['type'] . ' #' . $i, ENT_QUOTES, 'UTF-8') ?></h5>
-                            <p class="text-success fw-bold">Rp <?= number_format($r['price'], 0, ',', '.') ?> per night</p>
-                            <p class="mb-1"><span class="badge bg-info text-dark">Tersisa <?= $stock ?> kamar</span></p>
-                            <div class="mt-auto">
-                                <div class="d-flex gap-2">
-                                    <a href="user/book.php?room_id=<?= (int)$r['id'] ?>&unit=<?= $i ?>" class="btn btn-primary">Book Now</a>
-                                    <button type="button" class="btn btn-outline-info btn-stock" 
-                                        data-room-id="<?= (int)$r['id'] ?>" 
-                                        data-room-number="<?= htmlspecialchars($r['room_number'], ENT_QUOTES, 'UTF-8') ?>" 
-                                        data-type="<?= htmlspecialchars($r['type'], ENT_QUOTES, 'UTF-8') ?>" 
-                                        data-stock="<?= $stock ?>">
-                                        Lihat Stok
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endfor; }
-                    else {
-                ?>
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm">
-                        <img src="assets/images/room1.jpg" class="card-img-top" alt="Room">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title"><?= htmlspecialchars($r['room_number'] . ' - ' . $r['type'], ENT_QUOTES, 'UTF-8') ?></h5>
-                            <p class="text-success fw-bold">Rp <?= number_format($r['price'], 0, ',', '.') ?> per night</p>
-                            <?php if ($stock): ?>
-                                <p class="mb-1"><span class="badge bg-info text-dark">Tersisa <?= $stock ?> kamar</span></p>
-                            <?php endif; ?>
-                            <div class="mt-auto">
-                                <div class="d-flex gap-2">
-                                    <a href="user/book.php?room_id=<?= (int)$r['id'] ?>&unit=1" class="btn btn-primary">Book Now</a>
-                                    <button type="button" class="btn btn-outline-info btn-stock" 
-                                        data-room-id="<?= (int)$r['id'] ?>" 
-                                        data-room-number="<?= htmlspecialchars($r['room_number'], ENT_QUOTES, 'UTF-8') ?>" 
-                                        data-type="<?= htmlspecialchars($r['type'], ENT_QUOTES, 'UTF-8') ?>" 
-                                        data-stock="<?= $stock ?>">
-                                        Lihat Stok
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php } ?>
-            <?php endforeach; ?>
+<div class="col-md-3">
+  <label class="form-label text-white">Tamu Dan Kamar</label>
+
+  <div class="dropdown w-100">
+    <button class="btn btn-light w-100 text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="guestSummary">
+      0 Dewasa, 0 Anak, 0 Kamar
+    </button>
+    <div class="dropdown-menu p-3" style="width: 320px;">
+      
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-person-fill fs-4"></i>
+          <span>Dewasa</span>
         </div>
-    </main>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('adult', -1)">−</button>
+          <span id="adultCount">2</span>
+          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('adult', 1)">+</button>
+        </div>
+      </div>
 
-    <footer class="text-center py-4">
-        <small>© 2025 Booking Hotel</small>
-    </footer>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-emoji-smile fs-4"></i>
+          <span>Anak</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('child', -1)">−</button>
+          <span id="childCount">0</span>
+          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('child', 1)">+</button>
+        </div>
+      </div>
 
-        <div class="modal fade" id="stockModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-sm modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="stockModalLabel">Stok Kamar</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p id="stockModalRoom"></p>
-                        <p id="stockModalCount" class="fw-bold fs-5 text-success"></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-door-open fs-4"></i>
+          <span>Kamar</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('room', -1)">−</button>
+          <span id="roomCount">1</span>
+          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('room', 1)">+</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary w-100" onclick="updateSummary()">Selesai</button>
+
+    </div>
+  </div>
+</div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-dark w-100">Search</button>
             </div>
+        </form>
+    </div>
+</div>
+
+
+<section id="about" class="container mt-5 mb-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h2 class="fw-bold mb-3">About Us</h2>
+
+            <p>
+                Solaz Resort, a luxurious haven in Baja California Sur, was crafted by the finest Mexican talent
+                to celebrate the striking contrast between the sparkling ocean and arid desert, architecture,
+                and breathtaking landscapes.
+            </p>
+
+            <p>
+                We invite you to discover everything this extraordinary destination has to offer. From relaxation
+                to adventure, Solaz Resort is the perfect place to indulge in comfort and luxury.
+            </p>
         </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            (function(){
-                const stockModal = new bootstrap.Modal(document.getElementById('stockModal'));
-                document.querySelectorAll('.btn-stock').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const roomNumber = btn.getAttribute('data-room-number') || '';
-                        const type = btn.getAttribute('data-type') || '';
-                        const stock = parseInt(btn.getAttribute('data-stock') || '0', 10);
-                        document.getElementById('stockModalRoom').textContent = roomNumber + ' — ' + type;
-                        document.getElementById('stockModalCount').textContent = (stock > 0) ? (stock + ' kamar tersedia') : 'Stok habis';
-                        stockModal.show();
-                    });
-                });
-            })();
-        </script>
-    </body>
-    </html>
+        <div class="col-md-6">
+            <img src="assets/images/about.jpg" class="img-fluid rounded shadow" alt="">
+        </div>
+    </div>
+</section>
+
+
+
+<footer class="bg-dark text-white text-center py-3 mt-5">
+    © 2025 Booking Hotel. All rights reserved.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  let adult = 2;
+  let child = 0;
+  let room = 1;
+
+  function updateGuest(type, value) {
+    if (type === "adult") {
+      adult = Math.max(1, adult + value);
+      document.getElementById("adultCount").textContent = adult;
+    }
+    if (type === "child") {
+      child = Math.max(0, child + value);
+      document.getElementById("childCount").textContent = child;
+    }
+    if (type === "room") {
+      room = Math.max(1, room + value);
+      document.getElementById("roomCount").textContent = room;
+    }
+  }
+
+  function updateSummary() {
+    const summary = `${adult} Dewasa, ${child} Anak, ${room} Kamar`;
+    document.getElementById("guestSummary").textContent = summary;
+  }
+</script>
+
+</body>
+</html>
+
