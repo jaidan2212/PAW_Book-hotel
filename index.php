@@ -77,10 +77,10 @@ try {
           </a>
 
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Rooms</a></li>
+            <li><a class="dropdown-item" href="user/rooms.php">Rooms</a></li>
             <li><a class="dropdown-item" href="#">Contact</a></li>
             <li><a class="dropdown-item" href="#">About Us</a></li>
-            <li><a class="dropdown-item" href="#">Login</a></li>
+            <li><a class="dropdown-item" href="login.php">Login</a></li>
           </ul>
         </li>
 
@@ -98,77 +98,72 @@ try {
         <h1 class="display-4 fw-bold">Experience Luxury & Comfort</h1>
         <p class="fs-5 mb-4">Your perfect stay starts here — book your dream vacation now.</p>
 
-        <a href="#rooms" class="btn btn-light btn-lg px-4">Explore Rooms</a>
+        <a href="user/rooms.php" class="btn btn-light btn-lg px-4">Explore Rooms</a>
     </div>
 </section>
+<div class="search-bar container mt-5">
+    <div class="row g-3">
 
-<div class="container mt-5">
-    <div class="card p-4 shadow-lg">
-        <form class="row g-3">
-            <div class="col-md-3">
-                <label class="form-label">Check-in</label>
-                <input type="date" class="form-control">
+        <div class="col-md-3">
+            <label class="form-label">Check In</label>
+            <input type="date" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Check Out</label>
+            <input type="date" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label d-block">Tamu</label>
+
+            <div class="dropdown">
+                <button class="form-control dropdown-toggle text-start" type="button" data-bs-toggle="dropdown">
+                    <span id="guestSummary">0 Dewasa • 0 Anak • 0 Room</span>
+                </button>
+
+                <ul class="dropdown-menu p-3" style="width: 250px;">                    
+                    
+                    <li class="d-flex justify-content-between align-items-center my-2">
+                        <span>Dewasa</span>
+                        <div>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                onclick="updateGuest(event, 'dewasa', -1)">−</button>
+                            <span id="dewasaCount" class="mx-2">1</span>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                onclick="updateGuest(event, 'dewasa', 1)">+</button>
+                        </div>
+                    </li>
+
+                    <li class="d-flex justify-content-between align-items-center my-2">
+                        <span>Anak</span>
+                        <div>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                onclick="updateGuest(event, 'Anak', -1)">−</button>
+                            <span id="AnakCount" class="mx-2">0</span>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                onclick="updateGuest(event, 'Anak', 1)">+</button>
+                        </div>
+                    </li>
+
+                    <li class="d-flex justify-content-between align-items-center my-2">
+                        <span>Rooms</span>
+                        <div>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                onclick="updateGuest(event, 'room', -1)">−</button>
+                            <span id="roomCount" class="mx-2">1</span>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                onclick="updateGuest(event, 'room', 1)">+</button>
+                        </div>
+                    </li>
+                </ul>
             </div>
-            <div class="col-md-3">
-                <label class="form-label">Check-out</label>
-                <input type="date" class="form-control">
-            </div>
-
-<div class="col-md-3">
-  <label class="form-label text-white">Tamu Dan Kamar</label>
-
-  <div class="dropdown w-100">
-    <button class="btn btn-light w-100 text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="guestSummary">
-      0 Dewasa, 0 Anak, 0 Kamar
-    </button>
-    <div class="dropdown-menu p-3" style="width: 320px;">
-      
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex align-items-center gap-2">
-          <i class="bi bi-person-fill fs-4"></i>
-          <span>Dewasa</span>
         </div>
-        <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('adult', -1)">−</button>
-          <span id="adultCount">2</span>
-          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('adult', 1)">+</button>
-        </div>
-      </div>
 
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex align-items-center gap-2">
-          <i class="bi bi-emoji-smile fs-4"></i>
-          <span>Anak</span>
+        <div class="col-md-3">
+            <label class="form-label d-block">&nbsp;</label>
+            <button class="btn btn-primary w-100">Search</button>
         </div>
-        <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('child', -1)">−</button>
-          <span id="childCount">0</span>
-          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('child', 1)">+</button>
-        </div>
-      </div>
-
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex align-items-center gap-2">
-          <i class="bi bi-door-open fs-4"></i>
-          <span>Kamar</span>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('room', -1)">−</button>
-          <span id="roomCount">1</span>
-          <button class="btn btn-outline-secondary btn-sm" onclick="updateGuest('room', 1)">+</button>
-        </div>
-      </div>
-
-      <button class="btn btn-primary w-100" onclick="updateSummary()">Selesai</button>
-
-    </div>
-  </div>
-</div>
-
-            <div class="col-md-3 d-flex align-items-end">
-                <button class="btn btn-dark w-100">Search</button>
-            </div>
-        </form>
     </div>
 </div>
 
@@ -205,30 +200,38 @@ try {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  let adult = 2;
-  let child = 0;
-  let room = 1;
+let dewasa = 1;
+let Anak = 0;
+let room = 1;
 
-  function updateGuest(type, value) {
-    if (type === "adult") {
-      adult = Math.max(1, adult + value);
-      document.getElementById("adultCount").textContent = adult;
+function updateSummary() {
+    document.getElementById("guestSummary").textContent =
+        `${dewasa} dewasa • ${Anak} Anak • ${room} Room`;
+}
+
+function updateGuest(event, type, value) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (type === "dewasa") {
+        dewasa = Math.max(0, dewasa + value); 
+        document.getElementById("dewasaCount").textContent = dewasa;
     }
-    if (type === "child") {
-      child = Math.max(0, child + value);
-      document.getElementById("childCount").textContent = child;
+
+    if (type === "Anak") {
+        Anak = Math.max(0, Anak + value); 
+        document.getElementById("AnakCount").textContent = Anak;
     }
+
     if (type === "room") {
-      room = Math.max(1, room + value);
-      document.getElementById("roomCount").textContent = room;
+        room = Math.max(0, room + value); // MINIMAL 0
+        document.getElementById("roomCount").textContent = room;
     }
-  }
 
-  function updateSummary() {
-    const summary = `${adult} Dewasa, ${child} Anak, ${room} Kamar`;
-    document.getElementById("guestSummary").textContent = summary;
-  }
+    updateSummary();
+}
 </script>
+
 
 </body>
 </html>
