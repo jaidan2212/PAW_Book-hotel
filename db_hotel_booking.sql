@@ -15,7 +15,8 @@ CREATE TABLE rooms (
   room_number VARCHAR(20) NOT NULL,
   type VARCHAR(50) NOT NULL,
   price DECIMAL(10,2) NOT NULL,
-  status ENUM('available','maintenance') DEFAULT 'available',
+  status ENUM('available','booked','maintenance') DEFAULT 'available',
+  stock INT NOT NULL DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -38,6 +39,7 @@ CREATE TABLE booking_rooms (
   price DECIMAL(10,2) NOT NULL,
   nights INT NOT NULL,
   subtotal DECIMAL(12,2) NOT NULL,
+  quantity INT NOT NULL DEFAULT 1,
   FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
   FOREIGN KEY (room_id) REFERENCES rooms(id)
 );
@@ -61,4 +63,4 @@ INSERT INTO rooms (room_number, type, price) VALUES
 
 
 INSERT INTO users (name, email, password, role) VALUES
-('Administrator', 'admin@hotel.test', '$2y$10$exampleplaceholderhash1234567890123456789', 'admin');
+('Administrator', 'admin@hotel.test', '$2y$10$exampleplaceholderhash', 'admin');
