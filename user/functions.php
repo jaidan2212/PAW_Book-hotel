@@ -1,5 +1,9 @@
 <?php
-require_once '../db.php';
+$dbPath = __DIR__ . '/../db.php';
+if (!file_exists($dbPath)) {
+    die("ERROR: db.php tidak ditemukan pada path: " . $dbPath);
+}
+require_once $dbPath;
 
 function getRooms() {
     global $mysqli;
