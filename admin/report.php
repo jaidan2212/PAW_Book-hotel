@@ -1,5 +1,5 @@
 <?php
-require_once 'db.php';
+require_once '../db.php';
 
 $res = $mysqli->query("SELECT * FROM bookings ORDER BY created_at DESC");
 $bookings = $res->fetch_all(MYSQLI_ASSOC);

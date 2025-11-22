@@ -3,7 +3,7 @@
 // Usage (CLI): php migrate_add_booked_status.php
 // Or access via browser: http://localhost/Tugas_Akhir_PAW/migrate_add_booked_status.php
 
-require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../db.php';
 
 header('Content-Type: text/plain; charset=utf-8');
 

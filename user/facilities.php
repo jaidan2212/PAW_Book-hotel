@@ -1,5 +1,5 @@
 <?php
-require_once 'db.php';
+require_once '../db.php';
 require_once 'functions.php';
 
 $sql = "SELECT type, COUNT(*) AS available_count, COUNT(*) + 0 AS room_count FROM rooms WHERE status = 'available' GROUP BY type ORDER BY type";
@@ -84,10 +84,10 @@ $facilities_map = [
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="index.php">Booking Hotel</a>
+        <a class="navbar-brand" href="../index.php">Booking Hotel</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="../index.php">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="rooms.php">Rooms</a></li>
                 <li class="nav-item"><a class="nav-link active" href="facilities.php">Facilities</a></li>
             </ul>

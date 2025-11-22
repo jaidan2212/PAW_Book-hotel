@@ -1,5 +1,5 @@
 <?php
-require_once 'db.php';
+require_once '../db.php';
 
 echo "Set stock demo\n";
 $n = isset($_GET['n']) ? (int)$_GET['n'] : 3;

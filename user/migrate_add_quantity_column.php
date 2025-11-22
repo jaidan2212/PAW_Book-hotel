@@ -1,5 +1,5 @@
 <?php
-require_once 'db.php';
+require_once '../db.php';
 
 echo "Migration: ensure booking_rooms has 'quantity' column\n";
 try {

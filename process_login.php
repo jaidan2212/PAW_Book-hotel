@@ -1,6 +1,6 @@
 <?php
 require_once 'db.php';
-require_once 'functions.php';
+require_once 'user/functions.php';
 
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';

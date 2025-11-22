@@ -1,5 +1,5 @@
 <?php
-require_once 'functions.php';
+require_once 'user/functions.php';
 $rooms = getRooms();
 
 $hasStock = false;
@@ -25,8 +25,8 @@ try {
             <a class="navbar-brand" href="index.php">Booking Hotel</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="rooms.php">Rooms</a></li>
-                    <li class="nav-item"><a class="nav-link" href="facilities.php">Facilities</a></li>
+                    <li class="nav-item"><a class="nav-link" href="user/rooms.php">Rooms</a></li>
+                    <li class="nav-item"><a class="nav-link" href="user/facilities.php">Facilities</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Contact us</a></li>
                 </ul>
                 <div class="d-flex">
@@ -47,8 +47,8 @@ try {
             <div class="alert alert-warning">
                 Kolom <strong>stock</strong> belum ada di database — itu penyebab hanya muncul 1 pilihan.
                 <div class="mt-2">
-                    <a class="btn btn-sm btn-primary" href="migrate_add_stock_column.php">Jalankan migrasi stock</a>
-                    <a class="btn btn-sm btn-secondary" href="migrate_set_stock_demo.php?n=5">Set stock demo (n=5)</a>
+                    <a class="btn btn-sm btn-primary" href="user/migrate_add_stock_column.php">Jalankan migrasi stock</a>
+                    <a class="btn btn-sm btn-secondary" href="user/migrate_set_stock_demo.php?n=5">Set stock demo (n=5)</a>
                 </div>
                 <div class="mt-2 small text-muted">Jika kamu menggunakan phpMyAdmin, kamu juga bisa menjalankan: <code>ALTER TABLE rooms ADD COLUMN stock INT NOT NULL DEFAULT 1;</code></div>
             </div>
@@ -71,7 +71,7 @@ try {
                             <p class="mb-1"><span class="badge bg-info text-dark">Tersisa <?= $stock ?> kamar</span></p>
                             <div class="mt-auto">
                                 <div class="d-flex gap-2">
-                                    <a href="book.php?room_id=<?= (int)$r['id'] ?>&unit=<?= $i ?>" class="btn btn-primary">Book Now</a>
+                                    <a href="user/book.php?room_id=<?= (int)$r['id'] ?>&unit=<?= $i ?>" class="btn btn-primary">Book Now</a>
                                     <button type="button" class="btn btn-outline-info btn-stock" 
                                         data-room-id="<?= (int)$r['id'] ?>" 
                                         data-room-number="<?= htmlspecialchars($r['room_number'], ENT_QUOTES, 'UTF-8') ?>" 
@@ -98,7 +98,7 @@ try {
                             <?php endif; ?>
                             <div class="mt-auto">
                                 <div class="d-flex gap-2">
-                                    <a href="book.php?room_id=<?= (int)$r['id'] ?>&unit=1" class="btn btn-primary">Book Now</a>
+                                    <a href="user/book.php?room_id=<?= (int)$r['id'] ?>&unit=1" class="btn btn-primary">Book Now</a>
                                     <button type="button" class="btn btn-outline-info btn-stock" 
                                         data-room-id="<?= (int)$r['id'] ?>" 
                                         data-room-number="<?= htmlspecialchars($r['room_number'], ENT_QUOTES, 'UTF-8') ?>" 

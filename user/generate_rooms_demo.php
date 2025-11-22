@@ -1,5 +1,5 @@
 <?php
-require_once 'db.php';
+require_once '../db.php';
 
 $type = isset($_GET['type']) ? trim($_GET['type']) : '';
 $base = isset($_GET['base']) ? (int)$_GET['base'] : 101;

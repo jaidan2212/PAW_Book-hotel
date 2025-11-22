@@ -21,10 +21,10 @@ if ($filterType !== '') {
 
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="index.php">Booking Hotel</a>
+            <a class="navbar-brand" href="../index.php">Booking Hotel</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../index.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link active" href="rooms.php">Rooms</a></li>
                 </ul>
             </div>
@@ -50,7 +50,7 @@ if ($filterType !== '') {
                 ?>
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="card h-100 shadow-sm">
-                        <img src="assets/images/room1.jpg" class="card-img-top" alt="Room">
+                        <img src="../assets/images/room1.jpg" class="card-img-top" alt="Room">
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title"><?= htmlspecialchars($r['room_number'] . ' - ' . $r['type'] . ' #' . $i, ENT_QUOTES, 'UTF-8') ?></h5>
                             <p class="text-success fw-bold">Rp <?= number_format($r['price'], 0, ',', '.') ?> / night</p>
@@ -75,7 +75,7 @@ if ($filterType !== '') {
                 ?>
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="card h-100 shadow-sm">
-                        <img src="assets/images/room1.jpg" class="card-img-top" alt="Room">
+                        <img src="../assets/images/room1.jpg" class="card-img-top" alt="Room">
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title"><?= htmlspecialchars($r['room_number'] . ' - ' . $r['type'], ENT_QUOTES, 'UTF-8') ?></h5>
                             <p class="text-success fw-bold">Rp <?= number_format($r['price'], 0, ',', '.') ?> / night</p>

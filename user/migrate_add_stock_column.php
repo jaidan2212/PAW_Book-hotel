@@ -1,5 +1,5 @@
 <?php
-require_once 'db.php';
+require_once '../db.php';
 
 echo "Migration: ensure rooms has 'stock' column\n";
 try {
