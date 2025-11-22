@@ -43,9 +43,6 @@ try {
             position: relative;
             z-index: 10;
         }
-        .hero-section {
-            margin-top: 90px;
-        }
 
     </style>
 
