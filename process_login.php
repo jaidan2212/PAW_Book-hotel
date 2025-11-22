@@ -26,7 +26,7 @@ if ($user) {
 
 if ($username === 'admin' && $password === '123') {
     $_SESSION['user'] = [ 'id' => 0, 'name' => 'admin' ];
-    header('Location: index.php');
+    header('Location: admin/dashboard.php');
     exit;
 }
 
