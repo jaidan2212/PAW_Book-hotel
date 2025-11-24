@@ -36,12 +36,10 @@ if ($tgl_awal && $tgl_akhir) {
     $sum = $mysqli->query($sum_query)->fetch_assoc()['total'] ?? 0;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin</title>
     <link rel="stylesheet" href="../assets/css/styleAdmin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -50,109 +48,97 @@ if ($tgl_awal && $tgl_akhir) {
 
 <div class="parent">
 
+    <!-- SIDEBAR -->
     <div class="sidebar"> 
         <h2>HOTEL SITE</h2> 
 <ul class="menu">
-    <li class="active">Home</li>
-    <li class="active dropdown-li">
+    <li><a href="dashboard.php?page=home.php" class="textstyle">Home</a></li>
+    
+    <li class="dropdown-li">
         Room Management
         <ul class="submenu">
-            <li><a href="" class="textstyle"><span >Edit rooms</span></a></li>
-            <li><a href="" class="textstyle"><span >Add rooms</span></a></li>
+            <li><a href="dashboard.php?page=rooms_edit" class="textstyle">Edit Rooms</a></li>
+            <li><a href="dashboard.php?page=rooms_add" class="textstyle">Add Rooms</a></li>
         </ul>
     </li>
-    <li class="active dropdown-li">
+
+    <li class="dropdown-li">
         Booking Management
         <ul class="submenu">
-            <li><a href="" class="textstyle"><span >confirmation payment</span></a></li>
-            <li><a href="" class="textstyle"><span >confirmation booking</span></a></li>
+            <li><a href="dashboard.php?page=payment_confirmation" class="textstyle">Confirmation Payment</a></li>
+            <li><a href="dashboard.php?page=booking_confirmation" class="textstyle">Confirmation Booking</a></li>
         </ul>
     </li>
 </ul>
 
     </div>
+
+    <!-- TOPBAR -->
     <div class="topbar">
         <div class="top-title">Dashboard</div>
 
         <div class="top-actions">
-            <a href="../index.php" class="textstyle"><span>Buka Situs</span></a>
+            <a href="../index.php" class="textstyle">Buka Situs</a>
             <span class="textstyle">Admin</span>
-            <a href="../logout.php" class="textstyle"><span >Logout </span></a>
+            <a href="../logout.php" class="textstyle">Logout</a>
         </div>
     </div>
 
-    <div class="content">
-        <main class="container py-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3>Laporan Transaksi</h3>
-                <form method="POST">
-                <input type="date" name="tgl_awal" value="<?= $tgl_awal ?>" style="border-radius: 5px;">
-                <input type="date" name="tgl_akhir" value="<?= $tgl_akhir ?>" style="border-radius: 5px;">
-                <button type="submit" style="background-color: rgba(34, 155, 28, 0.74); width: 80px; height: 25px; color: white; font-size: 15px; border: none; border-radius: 5px; cursor: pointer;">Tampilkan</button>
-                </form>
-            </div>
+    <!-- CONTENT -->
+ <div class="content">
+    <?php
+        $page = $_GET['page'] ?? 'home';
 
-            <?php if ($tgl_awal && $tgl_akhir) { ?>
-                <div class="mb-3">Total Pendapatan: <strong>Rp <?= number_format($sum,0,',','.') ?></strong></div>
-                <div style="width:800px;">
-                    <canvas id="chartPendapatan"></canvas>
-                </div>
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                <script>
-                new Chart(document.getElementById("chartPendapatan"), {
-                    type: "bar",
-                    data: {
-                        labels: <?= json_encode($label) ?>,
-                        datasets: [{
-                            label: "Pendapatan Harian (Rp)",
-                            data: <?= json_encode($jumlah) ?>,
-                            borderWidth: 2
-                        }]
-                    }
-                });
-                </script>
-            <?php } ?>
-            <?php if ($tgl_awal && $tgl_akhir) { ?>
-            <div class="table-responsive mt-4">
-            <table class="table table-striped table-bordered">
-                <thead class="table-light">
-                    <tr>
-                        <th>No</th>
-                        <th>Kode Booking</th>
-                        <th>Nama</th>
-                        <th>Check-in</th>
-                        <th>Check-out</th>
-                        <th class="text-end">Total</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <?php $i = 1; foreach($bookings as $b): ?>
-                <tr>
-                    <td><?= $i++ ?></td>
-                    <td><?= htmlspecialchars($b['booking_code']) ?></td>
-                    <td><?= htmlspecialchars($b['customer_name']) ?></td>
-                    <td><?= htmlspecialchars($b['checkin_date']) ?></td>
-                    <td><?= htmlspecialchars($b['checkout_date']) ?></td>
-                    <td class="text-end">Rp <?= number_format($b['total_amount'], 0, ',', '.') ?></td>
-                    <td><?= htmlspecialchars($b['status']) ?></td>
-                </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-            </div>
-            <?php } ?>
-            </div>
-        </main>
-    </div>
+        switch($page){
+            case 'rooms_add':
+                include 'pages/room_add.php';
+                break;
+
+            case 'rooms_edit':
+                include 'pages/room_edit.php';
+                break;
+
+            case 'booking_confirmation':
+                include 'pages/booking_confirmation.php';
+                break;
+
+            case 'payment_confirmation':
+                include 'pages/payment_confirmation.php';
+                break;
+
+            default:
+                include 'pages/home.php'; 
+                break;
+        }
+    ?>
 </div>
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.querySelectorAll(".dropdown-li").forEach(item => {
-        item.addEventListener("click", function() {
-            let submenu = this.querySelector(".submenu");
-            submenu.classList.toggle("show");
-        });
-    });
+new Chart(document.getElementById("chartPendapatan"), {
+    type: "line",
+    data: {
+        labels: <?= json_encode($labels) ?>,
+        datasets: [{
+            label: "Pendapatan (Rp)",
+            data: <?= json_encode($values) ?>,
+            borderWidth: 2
+        }]
+    }
+});
 </script>
+
+<script>
+document.querySelectorAll(".dropdown-li").forEach(item => {
+    item.addEventListener("click", function() {
+        let submenu = this.querySelector(".submenu");
+        submenu.classList.toggle("show");
+    });
+});
+</script>
+
 </body>
 </html>
