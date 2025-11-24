@@ -1,21 +1,38 @@
 <?php
 require_once '../db.php';
+if ($tgl_awal && $tgl_akhir) {
+    // Ambil data ringkasan
+    $totalIncome  = $mysqli->query("
+        SELECT SUM(amount) AS total 
+        FROM payments 
+        WHERE DATE(payment_date) BETWEEN '$tgl_awal' AND '$tgl_akhir'
+    ")->fetch_assoc()['total'] ?? 0;
 
-// Ambil data ringkasan
-$totalIncome  = $mysqli->query("SELECT SUM(amount) AS total FROM payments")->fetch_assoc()['total'] ?? 0;
-$totalBooking = $mysqli->query("SELECT COUNT(*) AS jml FROM bookings")->fetch_assoc()['jml'] ?? 0;
-$pendingBooking = $mysqli->query("SELECT COUNT(*) AS pending FROM bookings WHERE status='pending'")->fetch_assoc()['pending'] ?? 0;
+    $totalBooking = $mysqli->query("
+        SELECT COUNT(*) AS jml 
+        FROM bookings 
+        WHERE DATE(created_at) BETWEEN '$tgl_awal' AND '$tgl_akhir'
+    ")->fetch_assoc()['jml'] ?? 0;
 
-// Ambil data grafik pendapatan
-$dataChart = $mysqli->query("
-    SELECT DATE(payment_date) AS tanggal, SUM(amount) AS total_harian
-    FROM payments
-    GROUP BY DATE(payment_date)
-    ORDER BY DATE(payment_date) ASC
-")->fetch_all(MYSQLI_ASSOC);
+    $pendingBooking = $mysqli->query("
+        SELECT COUNT(*) AS pending 
+        FROM bookings 
+        WHERE status='pending'
+        AND DATE(created_at) BETWEEN '$tgl_awal' AND '$tgl_akhir'
+    ")->fetch_assoc()['pending'] ?? 0;
 
-$label = array_column($dataChart, 'tanggal');
-$jumlah = array_column($dataChart, 'total_harian');
+    // Ambil data grafik pendapatan
+    $dataChart = $mysqli->query("
+        SELECT DATE(payment_date) AS tanggal, SUM(amount) AS total_harian
+        FROM payments
+        WHERE DATE(payment_date) BETWEEN '$tgl_awal' AND '$tgl_akhir'
+        GROUP BY DATE(payment_date)
+    ")->fetch_all(MYSQLI_ASSOC);
+    
+    $label = array_column($dataChart, 'tanggal');
+    $jumlah = array_column($dataChart, 'total_harian');
+    
+}
 ?>
 
 <main class="container py-4">
@@ -63,35 +80,35 @@ $jumlah = array_column($dataChart, 'total_harian');
 </div>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        new Chart(document.getElementById("chartPendapatan"), {
-            type: "bar",
-            data: {
-                labels: <?= json_encode($label) ?>,
-                datasets: [{
-                    label: "Pendapatan Harian (Rp)",
-                    data: <?= json_encode($jumlah) ?>,
-                    borderWidth: 2,
-                    fill: true
-                }]
-            }
-        });
-    </script>
-            <div class="table-responsive mt-4">
-            <table class="table table-striped table-bordered">
-                <thead class="table-light">
-                    <tr>
-                        <th>No</th>
-                        <th>Kode Booking</th>
-                        <th>Nama</th>
-                        <th>Check-in</th>
-                        <th>Check-out</th>
-                        <th class="text-end">Total</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    new Chart(document.getElementById("chartPendapatan"), {
+        type: "bar",
+        data: {
+            labels: <?= json_encode($label) ?>,
+            datasets: [{
+                label: "Pendapatan Harian (Rp)",
+                data: <?= json_encode($jumlah) ?>,
+                borderWidth: 2,
+                fill: true
+            }]
+        }
+    });
+</script>
+        <div class="table-responsive mt-4">
+        <table class="table table-striped table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>No</th>
+                    <th>Kode Booking</th>
+                    <th>Nama</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th class="text-end">Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
                 <?php $i = 1; foreach($bookings as $b): ?>
                 <tr>
                     <td><?= $i++ ?></td>
@@ -103,8 +120,8 @@ $jumlah = array_column($dataChart, 'total_harian');
                     <td><?= htmlspecialchars($b['status']) ?></td>
                 </tr>
                 <?php endforeach; ?>
-                </tbody>
-            </table>
-            </div>
-            <?php } ?>
+            </tbody>
+        </table>
+        </div>
+    <?php } ?>
 </main>

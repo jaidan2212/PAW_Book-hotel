@@ -119,7 +119,7 @@ if ($tgl_awal && $tgl_akhir) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 new Chart(document.getElementById("chartPendapatan"), {
-    type: "line",
+    type: "bar",
     data: {
         labels: <?= json_encode($labels) ?>,
         datasets: [{
