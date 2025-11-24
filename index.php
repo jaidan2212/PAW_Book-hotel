@@ -196,16 +196,13 @@ try {
     </div>
 </section>
 
-<!-- ============================
-     ACCOMMODATION POLICIES (SOFT BACKGROUND)
-============================= -->
+
 <section class="py-5" style="background: #f7f6f3;">
     <div class="container">
         <h2 class="fw-bold mb-4 text-center">Kebijakan Akomodasi</h2>
 
         <div class="accordion" id="policyAccordion">
 
-            <!-- Policy 1 -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -222,7 +219,6 @@ try {
                 </div>
             </div>
 
-            <!-- Policy 2 -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingTwo">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -239,7 +235,6 @@ try {
                 </div>
             </div>
 
-            <!-- Policy 3 -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingThree">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -256,7 +251,6 @@ try {
                 </div>
             </div>
 
-            <!-- Policy 4 -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingFour">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -310,7 +304,7 @@ function updateGuest(event, type, value) {
     }
 
     if (type === "room") {
-        room = Math.max(0, room + value); // MINIMAL 0
+        room = Math.max(0, room + value); 
         document.getElementById("roomCount").textContent = room;
     }
 
