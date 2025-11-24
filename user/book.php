@@ -91,7 +91,7 @@ $rooms = getRooms();
 
         <div class="d-flex gap-2">
           <button class="btn btn-success">Simpan & Lanjut</button>
-          <a href="../index.php" class="btn btn-outline-secondary">← Kembali</a>
+<a href="book.php" class="btn btn-outline-secondary">← Kembali</a>
         </div>
       </form>
       <?php if ($reservedMessage): ?>
