@@ -35,6 +35,13 @@ $res = $stmt->get_result();
 if ($res->num_rows === 0) die('Kamar tidak ditemukan.');
 $row = $res->fetch_assoc();
 $price = (float)$row['price'];
+
+$hari = date('N', strtotime($checkin));
+
+if ($hari >= 1 && $hari <= 5) { 
+    $price = $price * 0.95;
+} 
+
 $hasStock = false;
 try {
     $chk = $mysqli->query("SHOW COLUMNS FROM rooms LIKE 'stock'");
