@@ -166,27 +166,113 @@ try {
         </div>
     </div>
 </div>
+<br><br>
 
+<section id="about" class="py-5" style="background: #f5f5f5;">
+    <div class="container">
+        <div class="row align-items-center">
 
-<section id="about" class="container mt-5 mb-5">
-    <div class="row align-items-center">
-        <div class="col-md-6">
-            <h2 class="fw-bold mb-3">About Us</h2>
+            <div class="col-md-6 mb-4 mb-md-0">
+                <h2 class="fw-bold mb-3">About Us</h2>
 
-            <p>
-                Solaz Resort, a luxurious haven in Baja California Sur, was crafted by the finest Mexican talent
-                to celebrate the striking contrast between the sparkling ocean and arid desert, architecture,
-                and breathtaking landscapes.
-            </p>
+                <p>
+                    Solaz Resort, sebuah resort mewah di Baja California Sur, dirancang oleh para ahli terbaik
+                    Meksiko untuk merayakan kontras yang memukau antara lautan yang berkilauan dan
+                    gurun yang gersang, arsitektur, dan lanskap yang menakjubkan.
+                </p>
 
-            <p>
-                We invite you to discover everything this extraordinary destination has to offer. From relaxation
-                to adventure, Solaz Resort is the perfect place to indulge in comfort and luxury.
-            </p>
+                <p>
+                    Kami mengundang Anda untuk menjelajahi semua yang ditawarkan destinasi luar biasa ini.
+                    Dari relaksasi hingga petualangan, Solaz Resort adalah tempat yang sempurna untuk menikmati
+                    kenyamanan dan kemewahan.
+                </p>
+            </div>
+
+            <div class="col-md-6">
+                <img src="assets/images/about.jpg" class="img-fluid rounded shadow" alt="">
+            </div>
+
         </div>
+    </div>
+</section>
 
-        <div class="col-md-6">
-            <img src="assets/images/about.jpg" class="img-fluid rounded shadow" alt="">
+<!-- ============================
+     ACCOMMODATION POLICIES (SOFT BACKGROUND)
+============================= -->
+<section class="py-5" style="background: #f7f6f3;">
+    <div class="container">
+        <h2 class="fw-bold mb-4 text-center">Kebijakan Akomodasi</h2>
+
+        <div class="accordion" id="policyAccordion">
+
+            <!-- Policy 1 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#policy1">
+                        <i class="bi bi-door-open me-2"></i> Check-in & Check-out
+                    </button>
+                </h2>
+                <div id="policy1" class="accordion-collapse collapse show" data-bs-parent="#policyAccordion">
+                    <div class="accordion-body">
+                        • Check-in: 14.00 <br>
+                        • Check-out: 12.00 <br>
+                        • Early check-in sesuai ketersediaan.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Policy 2 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#policy2">
+                        <i class="bi bi-people me-2"></i> Kebijakan Tamu & Anak
+                    </button>
+                </h2>
+                <div id="policy2" class="accordion-collapse collapse" data-bs-parent="#policyAccordion">
+                    <div class="accordion-body">
+                        • Semua usia anak diperbolehkan. <br>
+                        • Anak usia 12 tahun ke atas dihitung sebagai dewasa. <br>
+                        • Extra bed tersedia sesuai permintaan.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Policy 3 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#policy3">
+                        <i class="bi bi-cash-coin me-2"></i> Pembayaran
+                    </button>
+                </h2>
+                <div id="policy3" class="accordion-collapse collapse" data-bs-parent="#policyAccordion">
+                    <div class="accordion-body">
+                        • Dapat membayar menggunakan kartu kredit, debit, transfer. <br>
+                        • Deposit mungkin diperlukan saat check-in. <br>
+                        • Pembatalan mengikuti kebijakan masing-masing tipe kamar.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Policy 4 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#policy4">
+                        <i class="bi bi-ban me-2"></i> Larangan
+                    </button>
+                </h2>
+                <div id="policy4" class="accordion-collapse collapse" data-bs-parent="#policyAccordion">
+                    <div class="accordion-body">
+                        • Dilarang merokok di area kamar. <br>
+                        • Hewan peliharaan tidak diperbolehkan. <br>
+                        • Dilarang membawa barang berbahaya.
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
