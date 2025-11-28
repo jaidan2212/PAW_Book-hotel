@@ -228,7 +228,7 @@ if (isset($_SESSION['user'])) {
                     <div class="card-body">
                         <h5 class="card-title">Single Room</h5>
                         <p class="card-text">Kamar nyaman untuk 1 orang.</p>
-                        <a href="room_list.php?type=Single" class="btn btn-primary w-100">View Room</a>
+                        <a href="user/room_list.php?type=Single" class="btn btn-primary w-100">View Room</a>
                     </div>
                 </div>
             </div>
@@ -240,7 +240,7 @@ if (isset($_SESSION['user'])) {
                     <div class="card-body">
                         <h5 class="card-title">Double Room</h5>
                         <p class="card-text">Kamar luas untuk 2 orang.</p>
-                        <a href="room_list.php?type=Double" class="btn btn-primary w-100">View Room</a>
+                        <a href="user/room_list.php?type=Double" class="btn btn-primary w-100">View Room</a>
                     </div>
                 </div>
             </div>
@@ -252,7 +252,7 @@ if (isset($_SESSION['user'])) {
                     <div class="card-body">
                         <h5 class="card-title">Suite Room</h5>
                         <p class="card-text">Kamar paling mewah dan premium.</p>
-                        <a href="room_list.php?type=Suite" class="btn btn-primary w-100">View Room</a>
+                        <a href="user/room_list.php?type=Suite" class="btn btn-primary w-100">View Room</a>
                     </div>
                 </div>
             </div>
