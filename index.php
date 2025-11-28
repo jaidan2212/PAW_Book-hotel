@@ -17,16 +17,25 @@ try {
 }
 
 $photoPath = "assets/default.png";
+
 if (isset($_SESSION['user'])) {
     $uid = $_SESSION['user']['id'];
     $stmt = $mysqli->prepare("SELECT photo FROM users WHERE id = ?");
     $stmt->bind_param("i", $uid);
     $stmt->execute();
     $userData = $stmt->get_result()->fetch_assoc();
+
     if (!empty($userData['photo'])) {
-        $photoPath = "uploads/" . $userData['photo'];
+
+        if (str_starts_with($userData['photo'], "http")) {
+            $photoPath = $userData['photo'];
+        } else {
+            $photoPath = "uploads/" . $userData['photo'];
+        }
+
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
