@@ -5,12 +5,11 @@ $rooms = getRooms();
 <?php
 require_once 'functions.php';
 
-// If a room_id is passed we'll try to reserve it for the current session (short hold)
 $reservedMessage = '';
 $selectedUnit = null;
 if (isset($_GET['room_id'])) {
   $rid = (int)$_GET['room_id'];
-  $ok = reserveRoom($rid, 15); // hold for 15 minutes
+  $ok = reserveRoom($rid, 15); 
   if ($ok) {
     $reservedMessage = 'Kamar berhasil ditahan selama 15 menit. Silakan lanjut mengisi form.';
   } else {
@@ -91,7 +90,7 @@ $rooms = getRooms();
 
         <div class="d-flex gap-2">
           <button class="btn btn-success">Simpan & Lanjut</button>
-<a href="book.php" class="btn btn-outline-secondary">← Kembali</a>
+          <a href="rooms.php" class="btn btn-outline-secondary">← Kembali</a>
         </div>
       </form>
       <?php if ($reservedMessage): ?>
