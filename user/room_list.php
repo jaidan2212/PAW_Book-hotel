@@ -123,7 +123,7 @@ $query = mysqli_query($conn, $sql);
                                 <strong>Stock:</strong> <?= $room['stock']; ?><br>
                             </p>
 
-                            <a href="booking.php?id=<?= $room['id'] ?>"
+                            <a href="user/book.php<?= $room['id'] ?>"
                                 class="btn btn-success w-100 mt-2"
                                 <?= ($room['status'] !== 'available') ? 'disabled' : '' ?>>
                                 <?= ($room['status'] === 'available') ? "Book Now" : "Not Available"; ?>

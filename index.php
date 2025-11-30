@@ -148,7 +148,7 @@ if (isset($_SESSION['user'])) {
         <p class="fs-5 mb-4">Your perfect stay starts here — book your dream vacation now.</p>
 
         <div class="d-flex">
-            <a href="user/cek_room.php" class="btn btn-light px-4 py-2">Explore Rooms</a>
+            <a href="user/rooms.php" class="btn btn-light px-4 py-2">Explore Rooms</a>
 
 
             
@@ -278,7 +278,7 @@ if (isset($_SESSION['user'])) {
                 <h2 class="fw-bold mb-3">About Us</h2>
 
                 <p>
-                    Solaz Resort, sebuah resort mewah di Baja California Sur, dirancang oleh para ahli terbaik
+                    Solaz Resort, sebuah resort mewah di Bali, Indonesia. dirancang oleh para ahli terbaik
                     Meksiko untuk merayakan kontras yang memukau antara lautan yang berkilauan dan
                     gurun yang gersang, arsitektur, dan lanskap yang menakjubkan.
                 </p>
@@ -408,7 +408,7 @@ if (isset($_SESSION['user'])) {
 <section id="contact" class="py-4 bg-dark text-white">
     <div class="container text-center">
         <h4 class="fw-bold mb-2">Contact & Reservation</h4>
-        <p class="mb-1"><i class="bi bi-telephone me-2"></i>+62 812-3456-7890</p>
+        <p class="mb-1"><i class="bi bi-telephone me-2"></i>+62 852-3326-7990</p>
         <p class="mb-1"><i class="bi bi-envelope me-2"></i>booking@solazresort.com</p>
         <p><i class="bi bi-geo-alt me-2"></i>Bali, Indonesia</p>
     </div>
