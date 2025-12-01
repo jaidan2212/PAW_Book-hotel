@@ -198,7 +198,7 @@ if (isset($_SESSION['user'])) {
           $static = [
             ['type'=>'Single','img'=>'assets/images/room1.jpeg','price'=>180000],
             ['type'=>'Double','img'=>'assets/images/room3.jpeg','price'=>350000],
-            ['type'=>'Suite','img'=>'assets/images/suite.webp','price'=>700000],
+            ['type'=>'Suite','img'=>'assets/images/room2.jpeg','price'=>700000],
           ];
         ?>
         <?php foreach ($static as $s): ?>
