@@ -47,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
     $stmt->close();
 
-    // Update session
     $_SESSION['user']['photo'] = $newPhotoURL;
     $_SESSION['user']['photo_public_id'] = $newPublicID;
 
