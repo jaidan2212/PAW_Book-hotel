@@ -345,7 +345,7 @@ if (isset($_SESSION['user'])) {
     </div>
 </section>
 
-<footer class="bg-dark text-white text-center py-3 mt-4">
+<footer id="contact" class="bg-dark text-white text-center py-3 mt-4">
   <div class="container text-center">
     <h4 class="fw-bold mb-2">Contact & Reservation</h4>
     <p class="mb-1"><i class="bi bi-telephone me-2"></i>+62 852-3326-7990</p>

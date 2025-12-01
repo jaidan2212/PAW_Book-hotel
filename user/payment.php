@@ -158,7 +158,7 @@ $payments = $pstmt->get_result()->fetch_all(MYSQLI_ASSOC);
           </form>
         <?php else: ?>
           <div class="d-flex gap-2">
-            <a class="btn btn-outline-primary" href="index.php">Kembali</a>
+            <a href="../index.php" class="btn btn-outline-primary">Kembali</a>
             <button class="btn btn-primary" onclick="window.print()">Cetak Nota</button>
           </div>
         <?php endif; ?>
