@@ -48,7 +48,6 @@ if ($tgl_awal && $tgl_akhir) {
 
 <div class="parent">
 
-    <!-- SIDEBAR -->
     <div class="sidebar"> 
         <h2>HOTEL SITE</h2> 
 <ul class="menu">
@@ -67,13 +66,15 @@ if ($tgl_awal && $tgl_akhir) {
         <ul class="submenu">
             <li><a href="dashboard.php?page=payment_confirmation" class="textstyle">Confirmation Payment</a></li>
             <li><a href="dashboard.php?page=booking_confirmation" class="textstyle">Confirmation Booking</a></li>
+            <li><a href="dashboard.php?page=booking_cancelled" class="textstyle">booking cancelled</a></li>
+            <li><a href="dashboard.php?page=booking_history" class="textstyle">booking history</a></li>
+            <li><a href="dashboard.php?page=denda" class="textstyle">denda</a></li>
         </ul>
     </li>
 </ul>
 
     </div>
 
-    <!-- TOPBAR -->
     <div class="topbar">
         <div class="top-title">Dashboard</div>
 
@@ -84,7 +85,6 @@ if ($tgl_awal && $tgl_akhir) {
         </div>
     </div>
 
-    <!-- CONTENT -->
  <div class="content">
     <?php
         $page = $_GET['page'] ?? 'home';
@@ -104,6 +104,26 @@ if ($tgl_awal && $tgl_akhir) {
 
             case 'payment_confirmation':
                 include 'pages/payment_confirmation.php';
+                break;
+
+            case 'booking_confirmation':
+                include 'pages/booking_confirmation.php';
+                break;
+
+            case 'payment_confirmation':
+                include 'pages/payment_confirmation.php';
+                break;
+
+            case 'booking_cancelled':
+                include 'pages/booking_cancelled.php';
+                break;
+
+            case 'booking_history':
+                include 'pages/booking_history.php';
+                break;
+
+            case 'denda':
+                include 'pages/denda.php';
                 break;
 
             default:

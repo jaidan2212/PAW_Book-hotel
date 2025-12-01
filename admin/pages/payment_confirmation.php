@@ -1,63 +1,121 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once '../db.php';
 
-$res = $mysqli->query("
-    SELECT payments.*, bookings.customer_name, bookings.booking_code 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    if(isset($_POST['payment_id'], $_POST['action'])) {
+
+        $payment_id = (int) $_POST['payment_id'];
+        $action     = $_POST['action'];
+
+        if (!in_array($action, ['approved', 'rejected'])) {
+            die("Status tidak valid!");
+        }
+
+        $stmt = $mysqli->prepare("UPDATE payments SET payment_status=? WHERE id=?");
+        $stmt->bind_param("si", $action, $payment_id);
+        $stmt->execute();
+    }
+}
+
+$q = "
+    SELECT id, booking_id, amount, method, note, payment_date
     FROM payments 
-    JOIN bookings ON payments.booking_id = bookings.id
-    ORDER BY payments.payment_date DESC
-");
-$payments = $res->fetch_all(MYSQLI_ASSOC);
-
-$total = $mysqli->query("SELECT SUM(amount) as t FROM payments")->fetch_assoc()['t'] ?? 0;
+    WHERE payment_status='pending'
+    ORDER BY payment_date ASC
+";
+$res = $mysqli->query($q);
 ?>
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Data Pembayaran</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
 
-<main class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Data Pembayaran</h3>
-  </div>
+<style>
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-family: Arial, sans-serif;
+    background: white;
+}
 
-  <div class="mb-2">Total Pembayaran Masuk: <strong>Rp <?= number_format($total,0,',','.') ?></strong></div>
+.payment-table th,
+.payment-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
 
-  <div class="table-responsive">
-  <table class="table table-striped table-bordered">
-    <thead class="table-light">
-      <tr>
-        <th>No</th>
-        <th>Kode Booking</th>
-        <th>Nama</th>
-        <th>Metode</th>
-        <th>Tanggal</th>
-        <th class="text-end">Jumlah</th>
-        <th>Catatan</th>
-      </tr>
-    </thead>
-    <tbody>
-    <?php $i=1; foreach($payments as $p): ?>
+.payment-table th {
+    background: #f4f4f4;
+    font-weight: bold;
+}
+
+.payment-table tr:hover {
+    background: #fafafa;
+}
+
+.pay-btn {
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.pay-approve {
+    background: green;
+    color: white;
+}
+
+.pay-reject {
+    background: red;
+    color: white;
+}
+</style>
+<h2>Konfirmasi Pembayaran</h2>
+
+<?php if ($res->num_rows == 0): ?>
+    <p style="color:gray;">Tidak ada data pembayaran pending.</p>
+<?php else: ?>
+
+<table class="payment-table">
     <tr>
-      <td><?= $i++ ?></td>
-      <td><?= $p['booking_code'] ?></td>
-      <td><?= $p['customer_name'] ?></td>
-      <td><?= $p['method'] ?></td>
-      <td><?= $p['payment_date'] ?></td>
-      <td class="text-end">Rp <?= number_format($p['amount'],0,',','.') ?></td>
-      <td><?= $p['note'] ?></td>
+        <th>Booking ID</th>
+        <th>Jumlah</th>
+        <th>Metode</th>
+        <th>Catatan</th>
+        <th>Tanggal</th>
+        <th>Aksi</th>
     </tr>
-    <?php endforeach; ?>
-    </tbody>
-  </table>
-  </div>
-</main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <?php while($p = $res->fetch_assoc()): ?>
+        <tr>
+            <td><?= $p['booking_id'] ?></td>
+            <td>Rp <?= number_format($p['amount'],0,',','.') ?></td>
+            <td><?= $p['method'] ?></td>
+            <td><?= $p['note'] ?></td>
+            <td><?= $p['payment_date'] ?></td>
+
+            <td>
+                <form method="POST" style="display:inline;">
+                    <input type="hidden" name="payment_id" value="<?= $p['id'] ?>">
+                    <input type="hidden" name="action" value="approved">
+                    <button class="pay-btn pay-approve" type="submit">Approve</button>
+                </form>
+
+                <form method="POST" style="display:inline;">
+                    <input type="hidden" name="payment_id" value="<?= $p['id'] ?>">
+                    <input type="hidden" name="action" value="rejected">
+                    <button class="pay-btn pay-reject" type="submit"
+                        onclick="return confirm('Tolak pembayaran ini?');">
+                        Reject
+                    </button>
+                </form>
+            </td>
+        </tr>
+    <?php endwhile; ?>
+</table>
+
+<?php endif; ?>
