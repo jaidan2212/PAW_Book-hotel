@@ -1,9 +1,15 @@
 <?php
-require_once 'functions.php';
-$rooms = getRooms();
+session_start();
+if (!isset($_SESSION['user'])) {
+    $id = $_GET['id'] ?? '';
+    header("Location: ../login.php?redirect=user/book.php?id=$id");
+    exit;
+}
 ?>
+
 <?php
 require_once 'functions.php';
+$rooms = getRooms();
 
 $reservedMessage = '';
 $selectedUnit = null;

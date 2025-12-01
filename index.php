@@ -7,7 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $types = [];
 try {
-    $tres = $mysqli->query("SELECT DISTINCT `type` FROM rooms ORDER BY `type` ASC");
+    $tres = $mysqli->query("SELECT DISTINCT type FROM rooms ORDER BY type ASC");
     if ($tres) {
         while ($row = $tres->fetch_assoc()) {
             $types[] = $row['type'];
@@ -22,10 +22,10 @@ try {
         SELECT r1.*
         FROM rooms r1
         JOIN (
-            SELECT `type`, MIN(price) AS min_price
+            SELECT type, MIN(price) AS min_price
             FROM rooms
             WHERE status = 'available' AND (stock IS NULL OR stock > 0)
-            GROUP BY `type`
+            GROUP BY type
         ) r2 ON r1.type = r2.type AND r1.price = r2.min_price
         WHERE r1.status = 'available'
         GROUP BY r1.type
@@ -196,9 +196,9 @@ if (isset($_SESSION['user'])) {
       <?php else: ?>
         <?php
           $static = [
-            ['type'=>'Single','img'=>'assets/images/room1.jpg','price'=>180000],
-            ['type'=>'Double','img'=>'assets/images/room2.jpeg','price'=>350000],
-            ['type'=>'Suite','img'=>'assets/images/room3.jpeg','price'=>700000],
+            ['type'=>'Single','img'=>'assets/images/room1.jpeg','price'=>180000],
+            ['type'=>'Double','img'=>'assets/images/room3.jpeg','price'=>350000],
+            ['type'=>'Suite','img'=>'assets/images/suite.webp','price'=>700000],
           ];
         ?>
         <?php foreach ($static as $s): ?>

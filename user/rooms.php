@@ -4,7 +4,9 @@ require_once '../db.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
+function esc($v) {
+    return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8');
+}
 function recommend_room_type($adult, $child)
 {
     $total = $adult + $child;
@@ -14,62 +16,52 @@ function recommend_room_type($adult, $child)
     return 'Double';
 }
 
-$q = isset($_GET['q']) ? trim($_GET['q']) : '';
-$type = isset($_GET['type']) ? trim($_GET['type']) : '';
-$dewasa = isset($_GET['dewasa']) ? (int)$_GET['dewasa'] : 1;
-$anak = isset($_GET['anak']) ? (int)$_GET['anak'] : 0;
-$min_price = isset($_GET['min_price']) && $_GET['min_price'] !== '' ? (float)$_GET['min_price'] : null;
-$max_price = isset($_GET['max_price']) && $_GET['max_price'] !== '' ? (float)$_GET['max_price'] : null;
-$checkin = $_GET['checkin'] ?? null;
-$checkout = $_GET['checkout'] ?? null;
+$q         = trim($_GET['q'] ?? '');
+$type      = trim($_GET['type'] ?? '');
+$dewasa    = (int)($_GET['dewasa'] ?? 1);
+$anak      = (int)($_GET['anak'] ?? 0);
+$min_price = ($_GET['min_price'] ?? '') !== '' ? (float)$_GET['min_price'] : null;
+$max_price = ($_GET['max_price'] ?? '') !== '' ? (float)$_GET['max_price'] : null;
+$checkin   = $_GET['checkin']  ?? '';
+$checkout  = $_GET['checkout'] ?? '';
 
 $where = [];
-if ($type !== '') {
-    $where[] = "type = '" . $mysqli->real_escape_string($type) . "'";
-}
 
-$stockExists = false;
-try {
-    $chk = $mysqli->query("SHOW COLUMNS FROM rooms LIKE 'stock'");
-    if ($chk && $chk->num_rows > 0) $stockExists = true;
-} catch (mysqli_sql_exception $e) {
-    $stockExists = false;
+if ($type !== '') {
+    $safe = $mysqli->real_escape_string($type);
+    $where[] = "type = '$safe'";
 }
 
 $where[] = "status = 'available'";
+
+$stockExists = false;
+if ($chk = $mysqli->query("SHOW COLUMNS FROM rooms LIKE 'stock'")) {
+    $stockExists = $chk->num_rows > 0;
+}
+
 if ($stockExists) {
     $where[] = "stock > 0";
 }
 
 $capAdultExists = false;
 $capChildExists = false;
-try {
-    $ca = $mysqli->query("SHOW COLUMNS FROM rooms LIKE 'capacity_adult'");
-    $cc = $mysqli->query("SHOW COLUMNS FROM rooms LIKE 'capacity_child'");
-    if ($ca && $ca->num_rows > 0) $capAdultExists = true;
-    if ($cc && $cc->num_rows > 0) $capChildExists = true;
-} catch (mysqli_sql_exception $e) {
-    $capAdultExists = $capChildExists = false;
-}
 
-if ($capAdultExists) {
-    $where[] = "capacity_adult >= " . intval($dewasa);
-}
-if ($capChildExists) {
-    $where[] = "capacity_child >= " . intval($anak);
-}
+$ca = $mysqli->query("SHOW COLUMNS FROM rooms LIKE 'capacity_adult'");
+$cc = $mysqli->query("SHOW COLUMNS FROM rooms LIKE 'capacity_child'");
+if ($ca && $ca->num_rows > 0) $capAdultExists = true;
+if ($cc && $cc->num_rows > 0) $capChildExists = true;
+
+if ($capAdultExists) $where[] = "capacity_adult >= " . intval($dewasa);
+if ($capChildExists) $where[] = "capacity_child >= " . intval($anak);
+
 
 if ($q !== '') {
     $safe = $mysqli->real_escape_string($q);
     $where[] = "(room_number LIKE '%$safe%' OR type LIKE '%$safe%' OR description LIKE '%$safe%')";
 }
 
-if (!is_null($min_price)) {
-    $where[] = "price >= " . floatval($min_price);
-}
-if (!is_null($max_price)) {
-    $where[] = "price <= " . floatval($max_price);
-}
+if (!is_null($min_price)) $where[] = "price >= " . floatval($min_price);
+if (!is_null($max_price)) $where[] = "price <= " . floatval($max_price);
 
 $sql = "SELECT * FROM rooms";
 if (!empty($where)) {
@@ -82,6 +74,7 @@ $rooms = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
 $recommended = recommend_room_type($dewasa, $anak);
 $noResults = empty($rooms);
+
 ?>
 <!doctype html>
 <html lang="id">
@@ -108,79 +101,81 @@ $noResults = empty($rooms);
     <div class="container py-4">
         <h3 class="mb-3">
             <?php if ($q !== ''): ?>
-                Hasil untuk: <strong><?= htmlspecialchars($q) ?></strong>
+                Hasil untuk: <strong><?= esc($q) ?></strong>
             <?php else: ?>
                 Explore Rooms
             <?php endif; ?>
 
-            <?php if ($type): ?>
-                — Tipe: <strong><?= htmlspecialchars($type) ?></strong>
+            <?php if ($type !== ''): ?>
+                — Tipe: <strong><?= esc($type) ?></strong>
             <?php endif; ?>
         </h3>
 
         <div class="mb-3">
-            <small class="text-muted">Rekomendasi tipe untuk permintaan kamu: <strong><?= htmlspecialchars($recommended) ?></strong></small>
+            <small class="text-muted">Rekomendasi tipe untuk permintaan kamu: <strong><?= esc($recommended) ?></strong></small>
         </div>
 
         <?php if ($noResults): ?>
             <div class="alert alert-warning">Tidak ada kamar cocok ditemukan.</div>
         <?php else: ?>
             <div class="row g-4">
-                <?php foreach ($rooms as $r):
-                    if (!empty($r['image'])) {
-                        if (str_starts_with($r['image'], 'http')) {
-                            $img = $r['image'];
+                <?php foreach ($rooms as $r): 
+                    
+                    $imgRaw = $r['image'] ?? '';
+                    if ($imgRaw) {
+                        if (str_starts_with($imgRaw, 'http')) {
+                            $img = $imgRaw;
                         } else {
-                            $img = "../assets/images/" . $r['image'];
+                            $img = "../assets/images/" . $imgRaw;
                         }
                     } else {
-                        switch ($r['type']) {
-                            case 'Single':
-                                $img = "../assets/images/room1.jpg";
-                                break;
-                            case 'Double':
-                                $img = "../assets/images/room2.jpeg";
-                                break;
-                            case 'Suite':
-                                $img = "../assets/images/room3.jpeg";
-                                break;
-                            default:
-                                $img = "../assets/images/default.jpeg";
-                                break;
+                        switch ($r['type'] ?? '') {
+                            case 'Single': $img = "../assets/images/room1.jpeg"; break;
+                            case 'Double': $img = "../assets/images/room3.jpeg"; break;
+                            case 'Suite':  $img = "../assets/images/room2.jpeg"; break;
+                            default:       $img = "../assets/images/default.jpeg"; break;
                         }
                     }
+                    $roomNumber = esc($r['room_number'] ?? '');
+                    $roomType   = esc($r['type'] ?? '');
+                    $price      = number_format($r['price'] ?? 0, 0, ',', '.');
+                    $desc       = nl2br(esc($r['description'] ?? ''));
+                    $capAdult   = esc($r['capacity_adult'] ?? '-');
+                    $capChild   = esc($r['capacity_child'] ?? '-');
+                    $status     = esc($r['status'] ?? 'unknown');
 
-                    $stock = isset($r['stock']) ? (int)$r['stock'] : null;
-                    $capAdult = isset($r['capacity_adult']) ? (int)$r['capacity_adult'] : '-';
-                    $capChild = isset($r['capacity_child']) ? (int)$r['capacity_child'] : '-';
+                    $stock = $r['stock'] ?? null;
                     $badge = ($r['status'] === 'available') ? 'bg-success' : 'bg-danger';
                 ?>
                     <div class="col-md-4">
                         <div class="card h-100 shadow-sm">
-                            <img src="<?= htmlspecialchars($img) ?>" class="card-img-top" style="height:220px; object-fit:cover;">
+                            <img src="<?= esc($img) ?>" class="card-img-top" style="height:220px; object-fit:cover;">
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title"><?= htmlspecialchars($r['room_number'] . ' — ' . $r['type']) ?></h5>
-                                <p class="fw-bold text-primary">Rp <?= number_format($r['price'], 0, ',', '.') ?> / malam</p>
-                                <p class="text-muted small">
-                                    <?= nl2br(htmlspecialchars($r['description'])) ?>
-                                </p>
-                                <p class="text-muted small">Kapasitas: <?= htmlspecialchars($capAdult) ?> Dewasa, <?= htmlspecialchars($capChild) ?> Anak</p>
+                                <h5 class="card-title"><?= $roomNumber ?> — <?= $roomType ?></h5>
+                                <p class="fw-bold text-primary">Rp <?= $price ?> / malam</p>
+                                <p class="text-muted small"><?= $desc ?></p>
+                                <p class="text-muted small">Kapasitas: <?= $capAdult ?> Dewasa, <?= $capChild ?> Anak</p>
+
                                 <p>
                                     <?php if (!is_null($stock)): ?>
-                                        <?php if ($stock > 0): ?>
-                                            <span class="badge bg-info text-dark">Sisa <?= $stock ?> kamar</span>
+                                        <?php if ((int)$stock > 0): ?>
+                                            <span class="badge bg-info text-dark">Sisa <?= esc($stock) ?> kamar</span>
                                         <?php else: ?>
                                             <span class="badge bg-danger">Habis</span>
                                         <?php endif; ?>
                                     <?php else: ?>
-                                        <span class="badge <?= $badge ?>"><?= htmlspecialchars($r['status']) ?></span>
+                                        <span class="badge <?= $badge ?>"><?= $status ?></span>
                                     <?php endif; ?>
                                 </p>
 
-                                <a href="book.php?room_id=<?= (int)$r['id'] ?>&checkin=<?= urlencode($checkin) ?>&checkout=<?= urlencode($checkout) ?>" class="btn btn-primary mt-auto <?= ($r['status'] !== 'available') ? 'disabled' : '' ?>">Book Now</a>
+                                <a href="book.php?room_id=<?= intval($r['id']) ?>&checkin=<?= esc($checkin) ?>&checkout=<?= esc($checkout) ?>" 
+                                   class="btn btn-primary mt-auto <?= ($r['status'] !== 'available') ? 'disabled' : '' ?>">
+                                   Book Now
+                                </a>
                             </div>
                         </div>
                     </div>
+
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
@@ -189,6 +184,16 @@ $noResults = empty($rooms);
             <a href="../index.php" class="btn btn-outline-secondary">← Kembali</a>
         </div>
     </div>
+
+    <footer class="bg-dark text-white text-center py-4 mt-2">
+  <div class="container text-center">
+    <h4 class="fw-bold mb-2">Contact & Reservation</h4>
+    <p class="mb-1"><i class="bi bi-telephone me-2"></i>+62 852-3326-7990</p>
+    <p class="mb-1"><i class="bi bi-envelope me-2"></i>booking@solazresort.com</p>
+    <p><i class="bi bi-geo-alt me-2"></i>Bali, Indonesia</p>
+  </div>
+  © 2025 Booking Hotel. All rights reserved.
+</footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

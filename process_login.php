@@ -32,11 +32,21 @@ if ($user && password_verify($password, $user['password'])) {
         'photo_public_id' => $user['photo_public_id']
     ];
 
+    // REDIRECT SETELAH LOGIN (BOOKING)
+    if (isset($_SESSION['after_login_redirect'])) {
+        $redir = $_SESSION['after_login_redirect'];
+        unset($_SESSION['after_login_redirect']);
+        header("Location: $redir");
+        exit;
+    }
+
+    // ADMIN
     if ($user['role'] === 'admin') {
         header("Location: admin/dashboard.php");
         exit;
     }
 
+    // USER BIASA
     header("Location: index.php");
     exit;
 }
