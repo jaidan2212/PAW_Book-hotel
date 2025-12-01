@@ -1,95 +1,193 @@
 <?php
-require_once "../db.php";
+require_once __DIR__ . "/../../db.php";
 
-$type = isset($_GET['type']) ? intval($_GET['type']) : 0;
-
-$stmt = $mysqli->prepare("SELECT * FROM rooms WHERE type = ?");
-$stmt->bind_param("i", $type);
-$stmt->execute();
-
-$result = $stmt->get_result();
-$room = $result->fetch_assoc();
-
-if (!$room) {
-    echo "<p style='color:red;'>Room Type ($id) not found!</p>";
-    exit;
+if (!isset($_GET['id'])) {
+    die("Room ID tidak ditemukan.");
 }
 
+$id = intval($_GET['id']);
+$data = $mysqli->query("SELECT * FROM rooms WHERE id=$id")->fetch_assoc();
 
+if (!$data) {
+    die("Data tidak ditemukan!");
+}
 
-// --- Update Data ---
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+$success = $error = "";
 
-    $room_number  = $_POST['room_number'];
-    $type         = $_POST['type'];
-    $price        = $_POST['price'];
-    $max_person   = $_POST['max_person'];
-    $description  = $_POST['description'];
-    $status       = $_POST['status'];
-    $stock        = $_POST['stock'];
+// PROSES UPDATE
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Jika ganti foto
-    $image = $room['image'];
+    $room_number = $_POST['room_number'];
+    $type        = $_POST['type'];
+    $price       = $_POST['price'];
+    $max_person  = $_POST['max_person'];
+    $description = $_POST['description'];
+    $status      = $_POST['status'];
+    $stock       = $_POST['stock'];
 
+    // Upload gambar (opsional)
+    $imageName = $data['image'];
     if (!empty($_FILES['image']['name'])) {
-        $image = time() . '_' . $_FILES['image']['name'];
-        move_uploaded_file($_FILES['image']['tmp_name'], "../uploads/$image");
-    } 
+        $imageName = basename($_FILES['image']['name']);
+        $targetPath = __DIR__ . "/../../assets/images/" . $imageName;
+        move_uploaded_file($_FILES['image']['tmp_name'], $targetPath);
+    }
 
-    $update = $mysqli->prepare("
-        UPDATE rooms SET 
-            room_number = ?, 
-            type = ?, 
-            price = ?, 
-            max_person = ?, 
-            description = ?, 
-            image = ?, 
-            status = ?, 
-            stock = ?
-        WHERE id = ?
+    // FIXED BIND PARAM
+    $stmt = $mysqli->prepare("
+        UPDATE rooms 
+        SET room_number=?, type=?, price=?, max_person=?, description=?, image=?, status=?, stock=?
+        WHERE id=?
     ");
 
-    $update->execute([
-        $room_number, $type, $price, $max_person, $description, 
-        $image, $status, $stock, $id
-    ]);
+    $stmt->bind_param(
+        "ssdisssii",   // tipe data YANG BENAR
+        $room_number,
+        $type,
+        $price,
+        $max_person,
+        $description,
+        $imageName,
+        $status,
+        $stock,
+        $id
+    );
 
-    header("Location: rooms.php?updated=true");
-    exit;
+    if ($stmt->execute()) {
+        $success = "Perubahan berhasil disimpan!";
+        $data = $mysqli->query("SELECT * FROM rooms WHERE id=$id")->fetch_assoc();
+    } else {
+        $error = "Gagal menyimpan perubahan: " . $stmt->error;
+    }
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
 
-<h2>Edit Room</h2>
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Room</title>
+    <link rel="stylesheet" href="../../assets/css/styleAdmin.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
 
-<form action="" method="POST" enctype="multipart/form-data">
-    <label>Room Number:</label><br>
-    <input type="text" name="room_number" value="<?= htmlspecialchars($room['room_number']) ?>" required><br><br>
+<body>
 
-    <label>Type:</label><br>
-    <input type="text" name="type" value="<?= htmlspecialchars($room['type']) ?>" required><br><br>
+    <div class="parent">
 
-    <label>Price:</label><br>
-    <input type="number" name="price" value="<?= $room['price'] ?>" required><br><br>
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h2>HOTEL SITE</h2>
+            <ul class="menu">
+                <li><a href="dashboard.php?page=home.php" class="textstyle">Home</a></li>
 
-    <label>Max Person:</label><br>
-    <input type="number" name="max_person" value="<?= $room['max_person'] ?>" required><br><br>
+                <li class="dropdown-li">
+                    Room Management
+                    <ul class="submenu">
+                        <li><a href="dashboard.php?page=rooms" class="textstyle">Rooms</a></li>
+                        <li><a href="dashboard.php?page=rooms_add" class="textstyle">Add Rooms</a></li>
+                    </ul>
+                </li>
 
-    <label>Stock:</label><br>
-    <input type="number" name="stock" value="<?= $room['stock'] ?>" required><br><br>
+                <li class="dropdown-li">
+                    Booking Management
+                    <ul class="submenu">
+                        <li><a href="dashboard.php?page=payment_confirmation" class="textstyle">Confirmation Payment</a></li>
+                        <li><a href="dashboard.php?page=booking_confirmation" class="textstyle">Confirmation Booking</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
 
-    <label>Status:</label><br>
-    <select name="status">
-        <option value="available" <?= $room['status'] == 'available' ? 'selected' : '' ?>>Available</option>
-        <option value="booked" <?= $room['status'] == 'booked' ? 'selected' : '' ?>>Booked</option>
-        <option value="maintenance" <?= $room['status'] == 'maintenance' ? 'selected' : '' ?>>Maintenance</option>
-    </select><br><br>
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="top-title">Dashboard</div>
+            <div class="top-actions">
+                <a href="../index.php" class="textstyle">Buka Situs</a>
+                <span class="textstyle">Admin</span>
+                <a href="../logout.php" class="textstyle">Logout</a>
+            </div>
+        </div>
 
-    <label>Description:</label><br>
-    <textarea name="description"><?= htmlspecialchars($room['description']) ?></textarea><br><br>
+        <!-- CONTENT -->
+        <div class="content">
+            <h2>Edit Kamar</h2>
 
-    <label>Image:</label><br>
-    <img src="../uploads/<?= $room['image'] ?>" width="100"><br>
-    <input type="file" name="image"><br><br>
+            <?php if ($success): ?>
+                <div class="alert alert-success"><?= $success ?></div>
+            <?php endif; ?>
 
-    <button type="submit">Update Room</button>
-</form>
+            <?php if ($error): ?>
+                <div class="alert alert-danger"><?= $error ?></div>
+            <?php endif; ?>
+
+            <form method="POST" enctype="multipart/form-data">
+
+                <div class="mb-3">
+                    <label>No Kamar</label>
+                    <input type="text" name="room_number" class="form-control" value="<?= $data['room_number'] ?>" required>
+                </div>
+
+                <div class="mb-3">
+                    <label>Tipe</label>
+                    <select name="type" class="form-control">
+                        <option <?= ($data['type'] == "Single" ? "selected" : "") ?>>Single</option>
+                        <option <?= ($data['type'] == "Double" ? "selected" : "") ?>>Double</option>
+                        <option <?= ($data['type'] == "Suite" ? "selected" : "") ?>>Suite</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Harga</label>
+                    <input type="number" name="price" class="form-control" value="<?= $data['price'] ?>" required>
+                </div>
+
+                <div class="mb-3">
+                    <label>Maksimal Orang</label>
+                    <input type="number" name="max_person" class="form-control" value="<?= $data['max_person'] ?>" required>
+                </div>
+
+                <div class="mb-3">
+                    <label>Stock</label>
+                    <input type="number" name="stock" class="form-control" value="<?= $data['stock'] ?>" required>
+                </div>
+
+                <div class="mb-3">
+                    <label>Status</label>
+                    <select name="status" class="form-control">
+                        <option value="available" <?= ($data['status'] == "available") ? "selected" : "" ?>>Available</option>
+                        <option value="unavailable" <?= ($data['status'] == "unavailable") ? "selected" : "" ?>>Unavailable</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Deskripsi</label>
+                    <textarea name="description" class="form-control" rows="4"><?= $data['description'] ?></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label>Gambar Saat Ini</label><br>
+                    <img src="../../uploads/<?= $data['image'] ?>" width="150" class="mb-2">
+                    <input type="file" name="image" class="form-control mt-2">
+                </div>
+
+                <button class="btn btn-primary">Simpan Perubahan</button>
+                <a href="dashboard.php?page=rooms" class="btn btn-secondary">Kembali</a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+        document.querySelectorAll(".dropdown-li").forEach(menu => {
+            menu.addEventListener("click", () => {
+                menu.querySelector(".submenu").classList.toggle("show");
+            });
+        });
+    </script>
+
+</body>
+
+</html>

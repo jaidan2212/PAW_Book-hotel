@@ -95,7 +95,7 @@ if ($tgl_awal && $tgl_akhir) {
                 break;
 
             case 'rooms_edit':
-                include 'pages/room_edit.php';
+                include 'pages/rooms.php';
                 break;
 
             case 'booking_confirmation':

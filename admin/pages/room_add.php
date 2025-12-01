@@ -8,47 +8,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $room_number = $_POST['room_number'];
     $type        = $_POST['type'];
     $price       = $_POST['price'];
+    $max_person  = $_POST['max_person'];
+    $description = $_POST['description'];
     $status      = $_POST['status'];
     $stock       = $_POST['stock'];
 
-    $stmt = $mysqli->prepare("INSERT INTO rooms (room_number, type, price, status, stock) VALUES (?,?,?,?,?)");
-    $stmt->bind_param("ssdsi", $room_number, $type, $price, $status, $stock);
-
-    if ($stmt->execute()) {
-        $success = "Room berhasil ditambahkan!";
-    } else {
-        $error = "Gagal menambahkan room: " . $mysqli->error;
+    // Upload gambar
+    $imageName = "";
+    if (!empty($_FILES['image']['name'])) {
+        $imageName = time() . "_" . $_FILES['image']['name'];
+        $path = "../uploads/" . $imageName;
+        move_uploaded_file($_FILES['image']['tmp_name'], $path);
     }
 
-    $stmt->close();
+    $stmt = $mysqli->prepare("
+        INSERT INTO rooms (room_number, type, price, max_person, description, image, status, stock)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ");
+
+    $stmt->bind_param(
+        "ssdiissi",
+        $room_number, $type, $price, $max_person, $description, $imageName, $status, $stock
+    );
+
+    if ($stmt->execute()) {
+        $success = "Kamar berhasil ditambahkan.";
+    } else {
+        $error = "Gagal menyimpan kamar!";
+    }
 }
 ?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Tambah Kamar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
 
-<h2>Tambah Room</h2>
+<div class="container mt-4">
+    <h2>Tambah Kamar</h2>
 
-<?php if ($success) echo "<div style='color:green;'>$success</div>"; ?>
-<?php if ($error) echo "<div style='color:red;'>$error</div>"; ?>
+    <?php if ($success): ?><div class="alert alert-success"><?= $success ?></div><?php endif; ?>
+    <?php if ($error): ?><div class="alert alert-danger"><?= $error ?></div><?php endif; ?>
 
-<form method="POST">
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label>No Kamar</label>
+            <input type="text" name="room_number" class="form-control" required>
+        </div>
 
-    <label>Room Number</label><br>
-    <input type="text" name="room_number" required><br><br>
+        <div class="mb-3">
+            <label>Tipe Kamar</label>
+            <select name="type" class="form-control" required>
+                <option value="Single">Single</option>
+                <option value="Double">Double</option>
+                <option value="Suite">Suite</option>
+            </select>
+        </div>
 
-    <label>Room Type</label><br>
-    <input type="text" name="type" required><br><br>
+        <div class="mb-3">
+            <label>Harga</label>
+            <input type="number" name="price" class="form-control" required>
+        </div>
 
-    <label>Price (Rp)</label><br>
-    <input type="number" name="price" required><br><br>
+        <div class="mb-3">
+            <label>Maksimal Orang</label>
+            <input type="number" name="max_person" class="form-control" required>
+        </div>
 
-    <label>Status</label><br>
-    <select name="status">
-        <option value="available">Available</option>
-        <option value="booked">Booked</option>
-        <option value="maintenance">Maintenance</option>
-    </select><br><br>
+        <div class="mb-3">
+            <label>Stock Kamar</label>
+            <input type="number" name="stock" class="form-control" required>
+        </div>
 
-    <label>Stock</label><br>
-    <input type="number" name="stock" value="1" min="1" required><br><br>
+        <div class="mb-3">
+            <label>Status</label>
+            <select name="status" class="form-control">
+                <option value="available">Available</option>
+                <option value="unavailable">Unavailable</option>
+            </select>
+        </div>
 
-    <button type="submit">Save Room</button>
-</form>
+        <div class="mb-3">
+            <label>Deskripsi</label>
+            <textarea name="description" class="form-control" rows="4"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label>Gambar</label>
+            <input type="file" name="image" class="form-control">
+        </div>
+
+        <button class="btn btn-primary">Simpan</button>
+        <a href="rooms.php" class="btn btn-secondary">Kembali</a>
+    </form>
+</div>
+
+</body>
+</html>
