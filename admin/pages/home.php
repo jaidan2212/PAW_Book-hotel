@@ -1,7 +1,6 @@
 <?php
 require_once '../db.php';
 if ($tgl_awal && $tgl_akhir) {
-    // Ambil data ringkasan
     $totalIncome  = $mysqli->query("
         SELECT SUM(amount) AS total 
         FROM payments 
@@ -21,7 +20,6 @@ if ($tgl_awal && $tgl_akhir) {
         AND DATE(created_at) BETWEEN '$tgl_awal' AND '$tgl_akhir'
     ")->fetch_assoc()['pending'] ?? 0;
 
-    // Ambil data grafik pendapatan
     $dataChart = $mysqli->query("
         SELECT DATE(payment_date) AS tanggal, SUM(amount) AS total_harian
         FROM payments

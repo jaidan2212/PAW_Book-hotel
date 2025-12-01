@@ -23,23 +23,38 @@ if ($result->num_rows === 0) {
 
 $booking = $result->fetch_assoc();
 
-$today   = new DateTime();
+$today    = new DateTime();
 $checkout = new DateTime($booking['checkout_date']);
 
-$daysLate = 0;
-$dendaPerHari = 50000;
+// Hitung keterlambatan lengkap dalam jam
+$interval = $checkout->diff($today);
+
+$totalHoursLate = 0;
 $denda = 0;
+$hargaKamar = (int)$booking['total_amount'];
 
 if ($checkout < $today) {
-    $interval = $checkout->diff($today);
-    $daysLate = $interval->days;
-    $denda = $daysLate * $dendaPerHari;
+    // Hitung total jam telat
+    $totalHoursLate = ($interval->days * 24) + $interval->h + ($interval->i / 60);
 
-    $update = $mysqli->prepare("UPDATE bookings SET denda=? WHERE id=?");
-    $update->bind_param("ii", $denda, $id);
-    $update->execute();
+    if ($totalHoursLate > 0) {
+
+        if ($totalHoursLate < 2) {
+            // Telat kurang dari 2 jam: denda 20% dari harga kamar
+            $denda = $hargaKamar * 0.20;
+
+        } else {
+            // Telat lebih dari 2 jam: 100% per 24 jam (dibulatkan ke atas)
+            $hariPenuh = ceil($totalHoursLate / 24);
+            $denda = $hariPenuh * $hargaKamar;
+        }
+
+        // Simpan denda ke database
+        $update = $mysqli->prepare("UPDATE bookings SET denda=? WHERE id=?");
+        $update->bind_param("ii", $denda, $id);
+        $update->execute();
+    }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -77,9 +92,17 @@ if ($checkout < $today) {
         <td><?= $booking['customer_email']; ?></td>
         <td><?= $booking['checkin_date']; ?></td>
         <td><?= $booking['checkout_date']; ?></td>
-        <td>Rp <?= number_format($booking['total_amount'],0,',','.'); ?></td>
-        <td class="late">Rp <?= number_format($denda,0,',','.'); ?></td>
-        <td><?= $daysLate > 0 ? "Telat $daysLate hari" : "Tidak telat"; ?></td>
+        <td>Rp <?= number_format($booking['total_amount'], 0, ',', '.'); ?></td>
+        <td class="late">Rp <?= number_format($denda, 0, ',', '.'); ?></td>
+        <td>
+            <?php
+                if ($totalHoursLate <= 0) {
+                    echo "Tidak telat";
+                } else {
+                    echo "Telat " . number_format($totalHoursLate, 2) . " jam";
+                }
+            ?>
+        </td>
     </tr>
 </table>
 
