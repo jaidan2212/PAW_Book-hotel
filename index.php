@@ -343,16 +343,15 @@ if (isset($_SESSION['user'])) {
 
         </div>
     </div>
-</section><section id="contact" class="py-4 bg-dark text-white">
+</section>
+
+<footer class="bg-dark text-white text-center py-3 mt-4">
   <div class="container text-center">
     <h4 class="fw-bold mb-2">Contact & Reservation</h4>
     <p class="mb-1"><i class="bi bi-telephone me-2"></i>+62 852-3326-7990</p>
     <p class="mb-1"><i class="bi bi-envelope me-2"></i>booking@solazresort.com</p>
     <p><i class="bi bi-geo-alt me-2"></i>Bali, Indonesia</p>
   </div>
-</section>
-
-<footer class="bg-dark text-white text-center py-3 mt-4">
   © 2025 Booking Hotel. All rights reserved.
 </footer>
 
