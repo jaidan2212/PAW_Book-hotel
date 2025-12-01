@@ -11,7 +11,7 @@ if ($username === '' || $password === '') {
     exit;
 }
 
-$stmt = $mysqli->prepare("SELECT id, name, password FROM users WHERE name = ? LIMIT 1");
+$stmt = $mysqli->prepare("SELECT id, name, password, role FROM users WHERE name = ? LIMIT 1");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -19,10 +19,20 @@ $user = $result->fetch_assoc();
 
 if ($user && password_verify($password, $user['password'])) {
     $_SESSION['user'] = [
-        'id' => $user['id'],
-        'name' => $user['name']
-    ];
+    'id'   => $user['id'],
+    'name' => $user['name'],
+    'role' => $user['role']
+];
 
+
+    if ($user['role'] === 'admin') {
+    header('Location: admin/dashboard.php');
+    exit;
+}
+
+
+
+    // Selain admin masuk ke index
     header('Location: index.php');
     exit;
 }
