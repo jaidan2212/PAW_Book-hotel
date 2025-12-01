@@ -61,6 +61,7 @@ if ($user && password_verify($password, $user['password'])) {
 }
 
 $_SESSION['login_error'] = 'Username atau password salah.';
-$_SESSION['captcha'] = rand(10, 999); // reset
+$_SESSION['captcha'] = rand(10, 999);
 header('Location: login.php');
 exit;
+
