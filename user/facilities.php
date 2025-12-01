@@ -4,7 +4,6 @@ require_once 'functions.php';
 require_once __DIR__ . '/../layout/path.php';
 include __DIR__ . '/../layout/navbar.php';
 
-
 $sql = "SELECT type, COUNT(*) AS available_count, COUNT(*) + 0 AS room_count FROM rooms WHERE status = 'available' GROUP BY type ORDER BY type";
 $res = $mysqli->query($sql);
 $types = [];
@@ -142,9 +141,8 @@ $facilities_map = [
 
 </main>
 
-<footer class="text-center py-4">
-    <small>© 2025 Booking Hotel</small>
-</footer>
+
+<?php include __DIR__ . '/../layout/footer.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

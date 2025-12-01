@@ -11,6 +11,7 @@ if (!isset($_SESSION['user'])) {
 require_once __DIR__ . '/../layout/path.php';
 include __DIR__ . '/../layout/navbar.php';
 require_once 'functions.php';
+
 $rooms = getRooms();
 
 $reservedMessage = '';
