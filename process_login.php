@@ -4,9 +4,19 @@ require_once 'db.php';
 
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
+$captchaInput = $_POST['captcha_input'] ?? '';
 
 if ($username === '' || $password === '') {
     $_SESSION['login_error'] = 'Masukkan username dan password.';
+    header('Location: login.php');
+    exit;
+}
+
+if (!isset($_SESSION['captcha']) || $captchaInput != $_SESSION['captcha']) {
+    $_SESSION['login_error'] = 'Captcha salah.';
+    
+    $_SESSION['captcha'] = rand(10, 999);
+
     header('Location: login.php');
     exit;
 }
@@ -23,6 +33,8 @@ $user = $stmt->get_result()->fetch_assoc();
 
 if ($user && password_verify($password, $user['password'])) {
 
+    unset($_SESSION['captcha']); 
+
     $_SESSION['user'] = [
         'id' => $user['id'],
         'name' => $user['name'],
@@ -32,7 +44,6 @@ if ($user && password_verify($password, $user['password'])) {
         'photo_public_id' => $user['photo_public_id']
     ];
 
-    // REDIRECT SETELAH LOGIN (BOOKING)
     if (isset($_SESSION['after_login_redirect'])) {
         $redir = $_SESSION['after_login_redirect'];
         unset($_SESSION['after_login_redirect']);
@@ -40,17 +51,16 @@ if ($user && password_verify($password, $user['password'])) {
         exit;
     }
 
-    // ADMIN
     if ($user['role'] === 'admin') {
         header("Location: admin/dashboard.php");
         exit;
     }
 
-    // USER BIASA
     header("Location: index.php");
     exit;
 }
 
 $_SESSION['login_error'] = 'Username atau password salah.';
+$_SESSION['captcha'] = rand(10, 999); // reset
 header('Location: login.php');
 exit;

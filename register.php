@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="post" action="register.php">
 
             <div class="mb-3">
-                <label class="form-label">Nama Lengkap</label>
+                <label class="form-label">Username</label>
                 <input class="form-control" type="text" name="name" required>
             </div>
 

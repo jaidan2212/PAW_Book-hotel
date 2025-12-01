@@ -1,7 +1,8 @@
 <?php
 session_start();
 
-// simpan tujuan redirect kalau ada
+$_SESSION['captcha'] = rand(10, 999);
+
 if (isset($_GET['redirect'])) {
     $_SESSION['after_login_redirect'] = $_GET['redirect'];
 }
@@ -29,14 +30,25 @@ if (isset($_GET['redirect'])) {
         <?php endif; ?>
 
         <form action="process_login.php" method="post">
+
             <div class="mb-3">
                 <label class="form-label">Username</label>
                 <input class="form-control" type="text" name="username" required>
             </div>
+
             <div class="mb-3">
                 <label class="form-label">Password</label>
                 <input class="form-control" type="password" name="password" required>
             </div>
+
+            <div class="mb-3">
+                <label class="form-label">Masukkan Angka Berikut</label>
+                <div class="p-2 mb-2 bg-dark text-white text-center rounded fs-4 fw-bold">
+                    <?= $_SESSION['captcha']; ?>
+                </div>
+                <input class="form-control" type="number" name="captcha_input" placeholder="Masukkan angka di atas" required>
+            </div>
+
             <button class="btn btn-primary w-100">Login</button>
         </form>
 
