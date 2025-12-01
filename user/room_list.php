@@ -1,5 +1,8 @@
 <?php
 require_once "../db.php";
+require_once __DIR__ . '/../layout/path.php';
+include __DIR__ . '/../layout/navbar.php';
+
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 $type = isset($_GET['type']) ? trim($_GET['type']) : '';
@@ -81,7 +84,6 @@ $query = $mysqli->query($sql);
     </style>
 </head>
 <body>
-
 <div class="container py-5">
 
     <h2 class="text-center mb-4 fw-bold text-primary">
@@ -196,6 +198,8 @@ $query = $mysqli->query($sql);
     </div>
 
 </div>
+
+<?php include __DIR__ . '/../layout/footer.php'; ?>
 
 </body>
 </html>

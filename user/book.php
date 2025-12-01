@@ -8,6 +8,8 @@ if (!isset($_SESSION['user'])) {
 ?>
 
 <?php
+require_once __DIR__ . '/../layout/path.php';
+include __DIR__ . '/../layout/navbar.php';
 require_once 'functions.php';
 $rooms = getRooms();
 
@@ -131,5 +133,7 @@ $rooms = getRooms();
     update();
   })();
 </script>
+
+
 </body>
 </html>

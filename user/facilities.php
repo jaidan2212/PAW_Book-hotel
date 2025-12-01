@@ -1,6 +1,9 @@
 <?php
 require_once '../db.php';
 require_once 'functions.php';
+require_once __DIR__ . '/../layout/path.php';
+include __DIR__ . '/../layout/navbar.php';
+
 
 $sql = "SELECT type, COUNT(*) AS available_count, COUNT(*) + 0 AS room_count FROM rooms WHERE status = 'available' GROUP BY type ORDER BY type";
 $res = $mysqli->query($sql);

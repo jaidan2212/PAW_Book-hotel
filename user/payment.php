@@ -1,6 +1,8 @@
 <?php
 require_once '../db.php';
 require_once 'functions.php';
+require_once __DIR__ . '/../layout/path.php';
+include __DIR__ . '/../layout/navbar.php';
 
 $booking_id = isset($_GET['booking_id']) ? (int)$_GET['booking_id'] : 0;
 if (!$booking_id) {

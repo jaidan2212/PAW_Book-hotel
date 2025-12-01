@@ -1,5 +1,7 @@
 <?php
 require_once '../db.php';
+require_once __DIR__ . '/../layout/path.php';
+include __DIR__ . '/../layout/navbar.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -86,17 +88,6 @@ $noResults = empty($rooms);
 </head>
 
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="../index.php">Booking Hotel</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="../index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="rooms.php">Rooms</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
     <div class="container py-4">
         <h3 class="mb-3">
@@ -185,17 +176,10 @@ $noResults = empty($rooms);
         </div>
     </div>
 
-    <footer class="bg-dark text-white text-center py-4 mt-2">
-  <div class="container text-center">
-    <h4 class="fw-bold mb-2">Contact & Reservation</h4>
-    <p class="mb-1"><i class="bi bi-telephone me-2"></i>+62 852-3326-7990</p>
-    <p class="mb-1"><i class="bi bi-envelope me-2"></i>booking@solazresort.com</p>
-    <p><i class="bi bi-geo-alt me-2"></i>Bali, Indonesia</p>
-  </div>
-  © 2025 Booking Hotel. All rights reserved.
-</footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<?php include __DIR__ . '/../layout/footer.php'; ?>
 </body>
 
 </html>
