@@ -3,11 +3,13 @@ session_start();
 require "../db.php";
 
 if (!isset($_SESSION['user'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 
 $user = $_SESSION['user'];
+
+$photo = $user['photo'] ?: "../assets/images/default_user.jpg";
 ?>
 
 <!DOCTYPE html>
@@ -24,11 +26,10 @@ $user = $_SESSION['user'];
 
     <h2 class="mb-4">Pengaturan Akun</h2>
 
-    <!-- PROFILE PHOTO -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body text-center">
 
-            <img src="<?= $_SESSION['user']['photo'] ?>" 
+            <img src="<?= $photo ?>" 
                  class="rounded-circle mb-3"
                  style="width:140px; height:140px; object-fit:cover;">
 
@@ -42,7 +43,6 @@ $user = $_SESSION['user'];
         </div>
     </div>
 
-    <!-- EDIT PROFILE -->
     <div class="card mb-4 shadow-sm">
         <div class="card-header"><strong>Edit Profile</strong></div>
         <div class="card-body">
@@ -58,30 +58,31 @@ $user = $_SESSION['user'];
         </div>
     </div>
 
-   <!-- CHANGE PASSWORD -->
-<div class="card shadow-sm">
-    <div class="card-header"><strong>Ubah Password</strong></div>
-    <div class="card-body">
+    <div class="card shadow-sm">
+        <div class="card-header"><strong>Ubah Password</strong></div>
+        <div class="card-body">
 
-        <form action="change_password.php" method="POST">
+            <form action="change_password.php" method="POST">
 
-            <label>Password Lama</label>
-            <input type="password" name="old_password" class="form-control mb-2" required>
+                <label>Password Lama</label>
+                <input type="password" name="old_password" class="form-control mb-2" required>
 
-            <label>Password Baru</label>
-            <input type="password" name="new_password" class="form-control mb-2" required>
+                <label>Password Baru</label>
+                <input type="password" name="new_password" class="form-control mb-2" required>
 
-            <label>Konfirmasi Password Baru</label>
-            <input type="password" name="confirm_password" class="form-control mb-3" required>
+                <label>Konfirmasi Password Baru</label>
+                <input type="password" name="confirm_password" class="form-control mb-3" required>
 
-            <div class="d-flex gap-2">
-                <button class="btn btn-warning w-50">Ubah Password</button>
-                <a href="../index.php" class="btn btn-secondary w-50">Kembali</a>
-            </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-warning w-50">Ubah Password</button>
+                    <a href="../index.php" class="btn btn-secondary w-50">Kembali</a>
+                </div>
 
-        </form>
+            </form>
 
+        </div>
     </div>
+
 </div>
 
 </body>

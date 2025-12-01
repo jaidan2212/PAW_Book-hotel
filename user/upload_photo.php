@@ -3,39 +3,53 @@ session_start();
 require_once "../db.php";
 $cloudinary = require "../config/cloudinary.php";
 
-use Cloudinary\Cloudinary;
-
-// Cek login
 if (!isset($_SESSION['user'])) {
     header("Location: ../login.php");
     exit;
 }
 
+$userId = $_SESSION['user']['id'];
+$oldPublicId = $_SESSION['user']['photo_public_id'] ?? null;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== 0) {
+        header("Location: account.php?upload=failed");
+        exit;
+    }
 
     $file = $_FILES['photo']['tmp_name'];
 
-    // Upload ke folder Cloudinary yg sama dgn database
-    $upload = $cloudinary->uploadApi()->upload($file, [
-        "folder" => "hotel_users"
-    ]);
+    if (!empty($oldPublicId)) {
+        try {
+            $cloudinary->uploadApi()->destroy($oldPublicId);
+        } catch (Exception $e) {}
+    }
 
-    $photoUrl = $upload['secure_url'];
-    $publicId = $upload['public_id'];
-    $userId = $_SESSION['user']['id'];
+    try {
+        $upload = $cloudinary->uploadApi()->upload($file, [
+            "folder" => "hotel_users"
+        ]);
+    } catch (Exception $e) {
+        header("Location: account.php?upload=failed");
+        exit;
+    }
 
-    // UPDATE KOLUM YANG BENAR
-    mysqli_query($conn, "
+    $newPhotoURL = $upload['secure_url'];
+    $newPublicID = $upload['public_id'];
+
+    $stmt = $mysqli->prepare("
         UPDATE users 
-        SET 
-            photo = '$photoUrl',
-            photo_public_id = '$publicId'
-        WHERE id = '$userId'
+        SET photo = ?, photo_public_id = ?
+        WHERE id = ?
     ");
+    $stmt->bind_param("ssi", $newPhotoURL, $newPublicID, $userId);
+    $stmt->execute();
+    $stmt->close();
 
-    // UPDATE SESSION
-    $_SESSION['user']['photo'] = $photoUrl;
-    $_SESSION['user']['photo_public_id'] = $publicId;
+    // Update session
+    $_SESSION['user']['photo'] = $newPhotoURL;
+    $_SESSION['user']['photo_public_id'] = $newPublicID;
 
     header("Location: account.php?upload=success");
     exit;

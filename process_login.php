@@ -1,6 +1,6 @@
 <?php
-require_once 'db.php';
 session_start();
+require_once 'db.php';
 
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
@@ -11,29 +11,33 @@ if ($username === '' || $password === '') {
     exit;
 }
 
-$stmt = $mysqli->prepare("SELECT id, name, password, role FROM users WHERE name = ? LIMIT 1");
+$stmt = $mysqli->prepare("
+    SELECT id, name, email, password, role, photo, photo_public_id
+    FROM users
+    WHERE name = ?
+    LIMIT 1
+");
 $stmt->bind_param("s", $username);
 $stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+$user = $stmt->get_result()->fetch_assoc();
 
 if ($user && password_verify($password, $user['password'])) {
-    $_SESSION['user'] = [
-    'id'   => $user['id'],
-    'name' => $user['name'],
-    'role' => $user['role']
-];
 
+    $_SESSION['user'] = [
+        'id' => $user['id'],
+        'name' => $user['name'],
+        'email' => $user['email'],
+        'role' => $user['role'],
+        'photo' => $user['photo'],
+        'photo_public_id' => $user['photo_public_id']
+    ];
 
     if ($user['role'] === 'admin') {
-    header('Location: admin/dashboard.php');
-    exit;
-}
+        header("Location: admin/dashboard.php");
+        exit;
+    }
 
-
-
-    // Selain admin masuk ke index
-    header('Location: index.php');
+    header("Location: index.php");
     exit;
 }
 
