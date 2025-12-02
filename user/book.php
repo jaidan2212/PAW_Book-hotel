@@ -22,7 +22,6 @@ if (isset($_GET['room_id'])) {
   if ($ok) {
     $reservedMessage = 'Kamar berhasil ditahan selama 15 menit. Silakan lanjut mengisi form.';
   } else {
-    $reservedMessage = 'Gagal menahan kamar. Mungkin sudah dipesan atau ditahan orang lain.';
   }
 }
 
