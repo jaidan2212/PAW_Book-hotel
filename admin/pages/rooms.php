@@ -1,5 +1,5 @@
 <?php
-require_once "../db.php";
+require_once __DIR__ . "/../../db.php";
 
 $result = $mysqli->query("SELECT * FROM rooms ORDER BY id ASC");
 ?>
@@ -17,37 +17,40 @@ $result = $mysqli->query("SELECT * FROM rooms ORDER BY id ASC");
     <div class="container mt-4">
         <h2>Data Kamar</h2>
         <table class="table table-bordered table-striped">
-            <thead>
+            <thead class="table-dark">
                 <tr>
                     <th>ID</th>
-                    <th>No. Kamar</th>
+                    <th>Nomor</th>
                     <th>Tipe</th>
                     <th>Harga</th>
-                    <th>Max Person</th>
-                    <th>Stock</th>
+                    <th>Dewasa</th>
+                    <th>Anak</th>
+                    <th>Stok</th>
                     <th>Status</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
+
             <tbody>
-                <?php while ($r = $result->fetch_assoc()): ?>
-                    <tr>
+                <?php while ($r = $result->fetch_assoc()): ?> <tr>
                         <td><?= $r['id'] ?></td>
                         <td><?= $r['room_number'] ?></td>
                         <td><?= $r['type'] ?></td>
                         <td>Rp <?= number_format($r['price'], 0, ',', '.') ?></td>
-                        <td><?= $r['max_person'] ?></td>
+                        <td><?= $r['capacity_adult'] ?></td>
+                        <td><?= $r['capacity_child'] ?></td>
                         <td><?= $r['stock'] ?></td>
                         <td><?= $r['status'] ?></td>
                         <td>
                             <a href="pages/room_edit.php?id=<?= $r['id'] ?>" class="btn btn-sm btn-primary">Edit</a>
                             <a href="pages/delete_room.php?id=<?= $r['id'] ?>"
                                 onclick="return confirm('Yakin ingin menghapus?')"
-                                class="btn btn-danger">Hapus</a>
+                                class="btn btn-danger btn-sm">Hapus</a>
                         </td>
                     </tr>
                 <?php endwhile; ?>
             </tbody>
+
         </table>
     </div>
 

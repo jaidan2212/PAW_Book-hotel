@@ -9,32 +9,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type        = $_POST['type'];
     $price       = $_POST['price'];
     $max_person  = $_POST['max_person'];
+    $capacity_adult = $_POST['capacity_adult'];
+    $capacity_child = $_POST['capacity_child'];
     $description = $_POST['description'];
     $status      = $_POST['status'];
     $stock       = $_POST['stock'];
 
-    
-    $imageName = "";
+    $imageName = null;
     if (!empty($_FILES['image']['name'])) {
-        $imageName = time() . "_" . $_FILES['image']['name'];
-        $path = "../uploads/" . $imageName;
-        move_uploaded_file($_FILES['image']['tmp_name'], $path);
+        $imageName = basename($_FILES['image']['name']);
+        $targetPath = __DIR__ . "/../../assets/images/" . $imageName;
+        move_uploaded_file($_FILES['image']['tmp_name'], $targetPath);
     }
 
     $stmt = $mysqli->prepare("
-        INSERT INTO rooms (room_number, type, price, max_person, description, image, status, stock)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO rooms 
+        (room_number, type, price, max_person, capacity_adult, capacity_child, description, image, status, stock)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     $stmt->bind_param(
-        "ssdiissi",
-        $room_number, $type, $price, $max_person, $description, $imageName, $status, $stock
+        "ssdiissssi",
+        $room_number,
+        $type,
+        $price,
+        $max_person,
+        $capacity_adult,
+        $capacity_child,
+        $description,
+        $imageName,
+        $status,
+        $stock
     );
 
     if ($stmt->execute()) {
-        $success = "Kamar berhasil ditambahkan.";
+        $success = "Kamar berhasil ditambahkan!";
     } else {
-        $error = "Gagal menyimpan kamar!";
+        $error = "Gagal menambah kamar: " . $stmt->error;
     }
 }
 ?>
@@ -48,19 +59,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="bg-light">
 
 <div class="container mt-4">
-    <h2>Tambah Kamar</h2>
+    <h3>Tambah Kamar</h3>
 
     <?php if ($success): ?><div class="alert alert-success"><?= $success ?></div><?php endif; ?>
     <?php if ($error): ?><div class="alert alert-danger"><?= $error ?></div><?php endif; ?>
 
-    <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label>No Kamar</label>
+    <form method="POST" enctype="multipart/form-data" class="row g-3">
+
+        <div class="col-md-6">
+            <label>Nomor Kamar</label>
             <input type="text" name="room_number" class="form-control" required>
         </div>
 
-        <div class="mb-3">
-            <label>Tipe Kamar</label>
+        <div class="col-md-6">
+            <label>Tipe</label>
             <select name="type" class="form-control" required>
                 <option value="Single">Single</option>
                 <option value="Double">Double</option>
@@ -68,41 +80,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </select>
         </div>
 
-        <div class="mb-3">
+        <div class="col-md-4">
             <label>Harga</label>
             <input type="number" name="price" class="form-control" required>
         </div>
 
-        <div class="mb-3">
-            <label>Maksimal Orang</label>
+        <div class="col-md-4">
+            <label>Maks. Orang</label>
             <input type="number" name="max_person" class="form-control" required>
         </div>
 
-        <div class="mb-3">
-            <label>Stock Kamar</label>
+        <div class="col-md-4">
+            <label>Stok</label>
             <input type="number" name="stock" class="form-control" required>
         </div>
 
-        <div class="mb-3">
-            <label>Status</label>
-            <select name="status" class="form-control">
-                <option value="available">Available</option>
-                <option value="unavailable">Unavailable</option>
-            </select>
+        <div class="col-md-6">
+            <label>Kapasitas Dewasa</label>
+            <input type="number" name="capacity_adult" class="form-control" required>
         </div>
 
-        <div class="mb-3">
+        <div class="col-md-6">
+            <label>Kapasitas Anak</label>
+            <input type="number" name="capacity_child" class="form-control" required>
+        </div>
+
+        <div class="col-md-12">
             <label>Deskripsi</label>
             <textarea name="description" class="form-control" rows="4"></textarea>
         </div>
 
-        <div class="mb-3">
-            <label>Gambar</label>
+        <div class="col-md-12">
+            <label>Gambar Kamar</label>
             <input type="file" name="image" class="form-control">
         </div>
 
-        <button class="btn btn-primary">Simpan</button>
-        <a href="dashboard.php?page=home.php" class="btn btn-secondary">Kembali</a>
+        <div class="col-md-6">
+            <label>Status</label>
+            <select name="status" class="form-control">
+                <option value="available">Available</option>
+                <option value="booked">Booked</option>
+                <option value="maintenance">Maintenance</option>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <button class="btn btn-primary mt-3">Tambah Kamar</button>
+        </div>
+
     </form>
 </div>
 

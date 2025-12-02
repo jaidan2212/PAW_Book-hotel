@@ -1,16 +1,10 @@
 <?php
 require_once __DIR__ . "/../../db.php";
 
-if (!isset($_GET['id'])) {
-    die("Room ID tidak ditemukan.");
-}
+if (!isset($_GET['id'])) die("ID tidak ditemukan");
+$id = (int)$_GET['id'];
 
-$id = intval($_GET['id']);
 $data = $mysqli->query("SELECT * FROM rooms WHERE id=$id")->fetch_assoc();
-
-if (!$data) {
-    die("Data tidak ditemukan!");
-}
 
 $success = $error = "";
 
@@ -20,6 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type        = $_POST['type'];
     $price       = $_POST['price'];
     $max_person  = $_POST['max_person'];
+    $capacity_adult = $_POST['capacity_adult'];
+    $capacity_child = $_POST['capacity_child'];
     $description = $_POST['description'];
     $status      = $_POST['status'];
     $stock       = $_POST['stock'];
@@ -32,17 +28,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt = $mysqli->prepare("
-        UPDATE rooms 
-        SET room_number=?, type=?, price=?, max_person=?, description=?, image=?, status=?, stock=?
+        UPDATE rooms
+        SET room_number=?, type=?, price=?, max_person=?, capacity_adult=?, capacity_child=?, description=?, image=?, status=?, stock=?
         WHERE id=?
     ");
 
     $stmt->bind_param(
-        "ssdisssii",
+        "ssdiissssii",
         $room_number,
         $type,
         $price,
         $max_person,
+        $capacity_adult,
+        $capacity_child,
         $description,
         $imageName,
         $status,
@@ -110,68 +108,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="content">
             <h2>Edit Kamar</h2>
 
-            <?php if ($success): ?>
-                <div class="alert alert-success"><?= $success ?></div>
-            <?php endif; ?>
+            <?php if ($success): ?><div class="alert alert-success"><?= $success ?></div><?php endif; ?>
+    <?php if ($error): ?><div class="alert alert-danger"><?= $error ?></div><?php endif; ?>
 
-            <?php if ($error): ?>
-                <div class="alert alert-danger"><?= $error ?></div>
-            <?php endif; ?>
+    <form method="POST" enctype="multipart/form-data" class="row g-3">
 
-            <form method="POST" enctype="multipart/form-data">
+        <div class="col-md-6">
+            <label>Nomor Kamar</label>
+            <input type="text" name="room_number" class="form-control" value="<?= $data['room_number'] ?>">
+        </div>
 
-                <div class="mb-3">
-                    <label>No Kamar</label>
-                    <input type="text" name="room_number" class="form-control" value="<?= $data['room_number'] ?>" required>
-                </div>
+        <div class="col-md-6">
+            <label>Tipe</label>
+            <select name="type" class="form-control">
+                <option <?= $data['type']=='Single'?'selected':'' ?>>Single</option>
+                <option <?= $data['type']=='Double'?'selected':'' ?>>Double</option>
+                <option <?= $data['type']=='Suite'?'selected':'' ?>>Suite</option>
+            </select>
+        </div>
 
-                <div class="mb-3">
-                    <label>Tipe</label>
-                    <select name="type" class="form-control">
-                        <option <?= ($data['type'] == "Single" ? "selected" : "") ?>>Single</option>
-                        <option <?= ($data['type'] == "Double" ? "selected" : "") ?>>Double</option>
-                        <option <?= ($data['type'] == "Suite" ? "selected" : "") ?>>Suite</option>
-                    </select>
-                </div>
+        <div class="col-md-4">
+            <label>Harga</label>
+            <input type="number" name="price" class="form-control" value="<?= $data['price'] ?>">
+        </div>
 
-                <div class="mb-3">
-                    <label>Harga</label>
-                    <input type="number" name="price" class="form-control" value="<?= $data['price'] ?>" required>
-                </div>
+        <div class="col-md-4">
+            <label>Maks. Orang</label>
+            <input type="number" name="max_person" class="form-control" value="<?= $data['max_person'] ?>">
+        </div>
 
-                <div class="mb-3">
-                    <label>Maksimal Orang</label>
-                    <input type="number" name="max_person" class="form-control" value="<?= $data['max_person'] ?>" required>
-                </div>
+        <div class="col-md-4">
+            <label>Stok</label>
+            <input type="number" name="stock" class="form-control" value="<?= $data['stock'] ?>">
+        </div>
 
-                <div class="mb-3">
-                    <label>Stock</label>
-                    <input type="number" name="stock" class="form-control" value="<?= $data['stock'] ?>" required>
-                </div>
+        <div class="col-md-6">
+            <label>Kapasitas Dewasa</label>
+            <input type="number" name="capacity_adult" class="form-control" value="<?= $data['capacity_adult'] ?>">
+        </div>
 
-                <div class="mb-3">
-                    <label>Status</label>
-                    <select name="status" class="form-control">
-                        <option value="available" <?= ($data['status'] == "available") ? "selected" : "" ?>>Available</option>
-                        <option value="unavailable" <?= ($data['status'] == "unavailable") ? "selected" : "" ?>>Unavailable</option>
-                    </select>
-                </div>
+        <div class="col-md-6">
+            <label>Kapasitas Anak</label>
+            <input type="number" name="capacity_child" class="form-control" value="<?= $data['capacity_child'] ?>">
+        </div>
 
-                <div class="mb-3">
-                    <label>Deskripsi</label>
-                    <textarea name="description" class="form-control" rows="4"><?= $data['description'] ?></textarea>
-                </div>
+        <div class="col-md-12">
+            <label>Deskripsi</label>
+            <textarea name="description" class="form-control" rows="4"><?= $data['description'] ?></textarea>
+        </div>
 
-                <div class="mb-3">
-                    <label>Gambar Saat Ini</label><br>
-                    <img src="../../uploads/<?= $data['image'] ?>" width="150" class="mb-2">
-                    <input type="file" name="image" class="form-control mt-2">
-                </div>
+        <div class="col-md-12">
+            <label>Gambar Kamar</label>
+            <input type="file" name="image" class="form-control">
+            <small>Gambar saat ini: <?= $data['image'] ?></small>
+        </div>
 
-                <button class="btn btn-primary">Simpan Perubahan</button>
-                <a href="../dashboard.php?page=rooms_edit" class="btn btn-secondary">Kembali</a>
+        <div class="col-md-6">
+            <label>Status</label>
+            <select name="status" class="form-control">
+                <option <?= $data['status']=='available'?'selected':'' ?>>available</option>
+                <option <?= $data['status']=='booked'?'selected':'' ?>>booked</option>
+                <option <?= $data['status']=='maintenance'?'selected':'' ?>>maintenance</option>
+            </select>
+        </div>
 
-            </form>
+        <div class="col-12">
+            <button class="btn btn-primary mt-3">Simpan Perubahan</button>
+            <button class="btn btn-secondary mt-3" type="button" onclick="window.location.href='../dashboard.php?page=rooms_edit'">Kembali</button>
+        </div>
+
+    </form>
 
         </div>
 
