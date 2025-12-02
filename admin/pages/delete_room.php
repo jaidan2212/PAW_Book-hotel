@@ -1,30 +1,25 @@
 <?php
-require_once "../db.php";
+include '../../db.php';
 
-if (!isset($_GET['id'])) {
-    echo "<script>alert('ID kamar tidak ditemukan'); window.location='index.php?page=rooms';</script>";
+$id = (int)$_GET['id'];
+
+$check = mysqli_query($mysqli, "SELECT * FROM booking_rooms WHERE room_id=$id");
+if (mysqli_num_rows($check) > 0) {
+    echo "<script>alert('Kamar tidak dapat dihapus karena masih digunakan pada booking!'); 
+    window.location='../dashboard.php?page=rooms_edit';</script>";
     exit;
 }
 
-$id = $_GET['id'];
+$q = mysqli_query($mysqli, "SELECT image FROM rooms WHERE id=$id");
+$r = mysqli_fetch_assoc($q);
 
-$stmt = $mysqli->prepare("SELECT image FROM rooms WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$room = $result->fetch_assoc();
-
-if (!$room) {
-    echo "<script>alert('Data kamar tidak ditemukan'); window.location='index.php?page=rooms';</script>";
-    exit;
+if (!empty($r['image'])) {
+    $path = "../../assets/images/" . $r['image'];
+    if (file_exists($path)) unlink($path);
 }
 
-$stmt = $mysqli->prepare("DELETE FROM rooms WHERE id = ?");
-$stmt->bind_param("i", $id);
+mysqli_query($mysqli, "DELETE FROM rooms WHERE id=$id");
 
-if ($stmt->execute()) {
-    echo "<script>alert('Kamar berhasil dihapus'); window.location='index.php?page=rooms';</script>";
-} else {
-    echo "<script>alert('Gagal menghapus kamar'); window.location='index.php?page=rooms';</script>";
-}
+echo "<script>alert('Kamar berhasil dihapus!'); window.location='../dashboard.php?page=rooms_edit';</script>";
+exit;
 ?>
