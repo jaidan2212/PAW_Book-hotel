@@ -20,15 +20,20 @@ if (!$booking) {
     exit;
 }
 
-$det = $mysqli->prepare("SELECT br.*, r.room_number, r.type FROM booking_rooms br JOIN rooms r ON r.id = br.room_id WHERE br.booking_id = ?");
-$det->bind_param('i', $booking_id);
-$det->execute();
-$details = $det->get_result()->fetch_all(MYSQLI_ASSOC);
+$details = [];
+$payments = [];
 
-$pstmt = $mysqli->prepare("SELECT * FROM payments WHERE booking_id = ? ORDER BY payment_date DESC");
-$pstmt->bind_param('i', $booking_id);
-$pstmt->execute();
-$payments = $pstmt->get_result()->fetch_all(MYSQLI_ASSOC);
+if ($booking['status'] === 'paid') {
+    $det = $mysqli->prepare("SELECT br.*, r.room_number, r.type FROM booking_rooms br JOIN rooms r ON r.id = br.room_id WHERE br.booking_id = ?");
+    $det->bind_param('i', $booking_id);
+    $det->execute();
+    $details = $det->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    $pstmt = $mysqli->prepare("SELECT * FROM payments WHERE booking_id = ? ORDER BY payment_date DESC");
+    $pstmt->bind_param('i', $booking_id);
+    $pstmt->execute();
+    $payments = $pstmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -54,85 +59,101 @@ $payments = $pstmt->get_result()->fetch_all(MYSQLI_ASSOC);
 <main class="container my-4">
   <div class="card">
     <div class="card-body">
-      <div id="receipt-area">
-        <div class="d-flex justify-content-between align-items-start mb-3">
-          <div>
-            <h4 class="mb-0">Booking Hotel</h4>
-            <small class="text-muted">Pembayaran & Nota</small>
-          </div>
-          <div class="text-end">
-            <small>Booking ID: <?= (int)$booking['id'] ?></small><br>
-            <small>Kode: <?= htmlspecialchars($booking['booking_code'], ENT_QUOTES, 'UTF-8') ?></small>
-          </div>
-        </div>
 
-        <div class="row mb-2">
-          <div class="col-md-6">
-            <strong>Nama:</strong> <?= htmlspecialchars($booking['customer_name'], ENT_QUOTES, 'UTF-8') ?><br>
-            <strong>Email:</strong> <?= htmlspecialchars($booking['customer_email'], ENT_QUOTES, 'UTF-8') ?>
-          </div>
-          <div class="col-md-6 text-md-end">
-            <strong>Tanggal:</strong> <?= htmlspecialchars($booking['checkin_date'], ENT_QUOTES, 'UTF-8') ?> → <?= htmlspecialchars($booking['checkout_date'], ENT_QUOTES, 'UTF-8') ?><br>
-            <strong>Status:</strong> <?= htmlspecialchars($booking['status'], ENT_QUOTES, 'UTF-8') ?>
-          </div>
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h4 class="mb-0">Booking Hotel</h4>
+          <small class="text-muted">Pembayaran & Nota</small>
         </div>
-
-        <h6>Detail Kamar</h6>
-        <div class="table-responsive">
-        <table class="table table-sm table-bordered">
-          <thead class="table-light">
-            <tr>
-              <th>Kamar</th>
-              <th>Tipe</th>
-              <th class="text-end">Harga</th>
-              <th class="text-center">Malam</th>
-              <th class="text-center">Jumlah</th>
-              <th class="text-end">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-          <?php foreach($details as $d): ?>
-            <tr>
-              <td><?= htmlspecialchars($d['room_number'], ENT_QUOTES, 'UTF-8') ?></td>
-              <td><?= htmlspecialchars($d['type'], ENT_QUOTES, 'UTF-8') ?></td>
-              <td class="text-end">Rp <?= number_format($d['price'],0,',','.') ?></td>
-              <td class="text-center"><?= (int)$d['nights'] ?></td>
-              <td class="text-center"><?= isset($d['quantity']) ? (int)$d['quantity'] : 1 ?></td>
-              <td class="text-end">Rp <?= number_format($d['subtotal'],0,',','.') ?></td>
-            </tr>
-          <?php endforeach; ?>
-          </tbody>
-        </table>
+        <div class="text-end">
+          <small>Booking ID: <?= (int)$booking['id'] ?></small><br>
+          <small>Kode: <?= htmlspecialchars($booking['booking_code'], ENT_QUOTES, 'UTF-8') ?></small>
         </div>
+      </div>
 
-        <div class="d-flex justify-content-end">
-          <div class="text-end">
-            <div>Total:</div>
-            <div class="fs-5 text-success">Rp <?= number_format($booking['total_amount'],0,',','.') ?></div>
-          </div>
+      <div class="row mb-2">
+        <div class="col-md-6">
+          <strong>Nama:</strong> <?= htmlspecialchars($booking['customer_name'], ENT_QUOTES, 'UTF-8') ?><br>
+          <strong>Email:</strong> <?= htmlspecialchars($booking['customer_email'], ENT_QUOTES, 'UTF-8') ?>
         </div>
+        <div class="col-md-6 text-md-end">
+          <strong>Tanggal:</strong> <?= htmlspecialchars($booking['checkin_date'], ENT_QUOTES, 'UTF-8') ?> → <?= htmlspecialchars($booking['checkout_date'], ENT_QUOTES, 'UTF-8') ?><br>
+          <strong>Status:</strong> <span class="badge bg-<?= $booking['status'] === 'paid' ? 'success' : ($booking['status'] === 'pending' ? 'warning' : 'danger') ?>"><?= htmlspecialchars($booking['status'], ENT_QUOTES, 'UTF-8') ?></span>
+        </div>
+      </div>
+      
+      <hr>
 
-        <?php if (!empty($payments)): ?>
-          <hr>
-          <h6>Riwayat Pembayaran</h6>
-          <table class="table table-sm">
-            <thead><tr><th>Tanggal</th><th class="text-end">Jumlah</th><th>Metode</th><th>Catatan</th></tr></thead>
-            <tbody>
-            <?php foreach($payments as $pm): ?>
+      <?php if ($booking['status'] === 'paid'): ?>
+        <div id="receipt-area">
+          <h3>✅ Pembayaran Dikonfirmasi - Nota Tersedia</h3>
+          <p class="text-success">Pembayaran Anda telah dikonfirmasi oleh admin. Nota ini dapat dicetak sebagai bukti pembayaran.</p>
+
+          <h6>Detail Kamar</h6>
+          <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead class="table-light">
               <tr>
-                <td><?= htmlspecialchars($pm['payment_date'], ENT_QUOTES, 'UTF-8') ?></td>
-                <td class="text-end">Rp <?= number_format($pm['amount'],0,',','.') ?></td>
-                <td><?= htmlspecialchars($pm['method'], ENT_QUOTES, 'UTF-8') ?></td>
-                <td><?= htmlspecialchars($pm['note'], ENT_QUOTES, 'UTF-8') ?></td>
+                <th>Kamar</th>
+                <th>Tipe</th>
+                <th class="text-end">Harga</th>
+                <th class="text-center">Malam</th>
+                <th class="text-center">Jumlah</th>
+                <th class="text-end">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+            <?php foreach($details as $d): ?>
+              <tr>
+                <td><?= htmlspecialchars($d['room_number'], ENT_QUOTES, 'UTF-8') ?></td>
+                <td><?= htmlspecialchars($d['type'], ENT_QUOTES, 'UTF-8') ?></td>
+                <td class="text-end">Rp <?= number_format($d['price'],0,',','.') ?></td>
+                <td class="text-center"><?= (int)$d['nights'] ?></td>
+                <td class="text-center"><?= isset($d['quantity']) ? (int)$d['quantity'] : 1 ?></td>
+                <td class="text-end">Rp <?= number_format($d['subtotal'],0,',','.') ?></td>
               </tr>
             <?php endforeach; ?>
             </tbody>
           </table>
-        <?php endif; ?>
-      </div>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <div class="text-end">
+              <div>Total:</div>
+              <div class="fs-5 text-success">Rp <?= number_format($booking['total_amount'],0,',','.') ?></div>
+            </div>
+          </div>
+
+          <?php if (!empty($payments)): ?>
+            <hr>
+            <h6>Riwayat Pembayaran</h6>
+            <table class="table table-sm">
+              <thead><tr><th>Tanggal</th><th class="text-end">Jumlah</th><th>Metode</th><th>Catatan</th></tr></thead>
+              <tbody>
+              <?php foreach($payments as $pm): ?>
+                <tr>
+                  <td><?= htmlspecialchars($pm['payment_date'], ENT_QUOTES, 'UTF-8') ?></td>
+                  <td class="text-end">Rp <?= number_format($pm['amount'],0,',','.') ?></td>
+                  <td><?= htmlspecialchars($pm['method'], ENT_QUOTES, 'UTF-8') ?></td>
+                  <td><?= htmlspecialchars($pm['note'], ENT_QUOTES, 'UTF-8') ?></td>
+                </tr>
+              <?php endforeach; ?>
+              </tbody>
+            </table>
+          <?php endif; ?>
+        </div>
+      <?php else: ?>
+        <div class="alert alert-info" role="alert">
+          <h3>⏳ Menunggu Konfirmasi Admin</h3>
+          <p>Pembayaran Anda telah diterima, namun nota pembayaran baru dapat dicetak setelah admin mengkonfirmasi pembayaran Anda. Silakan tunggu.</p>
+        </div>
+      <?php endif; ?>
+
 
       <div class="mt-3 no-print">
         <?php if ($booking['status'] !== 'paid'): ?>
+          <h4>Konfirmasi Pembayaran</h4>
+          <p class="text-muted">Setelah mengisi formulir ini, pembayaran akan menunggu konfirmasi admin.</p>
           <form action="process_payment.php" method="post" class="row g-2">
             <?= csrf_input_field() ?>
             <input type="hidden" name="booking_id" value="<?= (int)$booking['id'] ?>">
@@ -151,18 +172,19 @@ $payments = $pstmt->get_result()->fetch_all(MYSQLI_ASSOC);
             </div>
 
             <div class="col-12 col-md-4">
-              <label class="form-label">Catatan (opsional)</label>
+              <label class="form-label">Catatan</label>
               <input class="form-control" type="text" name="note">
             </div>
 
             <div class="col-12">
-              <button class="btn btn-success">Konfirmasi Pembayaran</button>
+              <button class="btn btn-success">Saya Sudah Bayar</button>
+              <small class="text-muted ms-3">Admin akan mengkonfirmasi setelah Anda menekan tombol ini.</small>
             </div>
           </form>
         <?php else: ?>
           <div class="d-flex gap-2">
             <a href="../index.php" class="btn btn-outline-primary">Kembali</a>
-            <button class="btn btn-primary" onclick="window.print()">Cetak Nota</button>
+            <button class="btn btn-primary" onclick="window.print()">🖨️ Cetak Nota</button>
           </div>
         <?php endif; ?>
       </div>

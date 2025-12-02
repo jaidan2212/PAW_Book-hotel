@@ -143,3 +143,27 @@ function clearReservation($room_id) {
 
     return true;
 }
+
+function get_receipt_data($mysqli, $booking_id, $booking_status) {
+    $data = [
+        'details' => [],
+        'payments' => []
+    ];
+
+    if ($booking_status === 'paid') {
+        
+        $det = $mysqli->prepare("SELECT br.*, r.room_number, r.type FROM booking_rooms br JOIN rooms r ON r.id = br.room_id WHERE br.booking_id = ?");
+        $det->bind_param('i', $booking_id);
+        $det->execute();
+        $data['details'] = $det->get_result()->fetch_all(MYSQLI_ASSOC);
+        $det->close();
+
+        $pstmt = $mysqli->prepare("SELECT * FROM payments WHERE booking_id = ? ORDER BY payment_date DESC");
+        $pstmt->bind_param('i', $booking_id);
+        $pstmt->execute();
+        $data['payments'] = $pstmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $pstmt->close();
+    }
+
+    return $data;
+}
