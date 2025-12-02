@@ -20,20 +20,10 @@ if (!$booking) {
     exit;
 }
 
-$details = [];
-$payments = [];
+$receipt_data = get_receipt_data($mysqli, $booking_id, $booking['status']);
 
-if ($booking['status'] === 'paid') {
-    $det = $mysqli->prepare("SELECT br.*, r.room_number, r.type FROM booking_rooms br JOIN rooms r ON r.id = br.room_id WHERE br.booking_id = ?");
-    $det->bind_param('i', $booking_id);
-    $det->execute();
-    $details = $det->get_result()->fetch_all(MYSQLI_ASSOC);
-
-    $pstmt = $mysqli->prepare("SELECT * FROM payments WHERE booking_id = ? ORDER BY payment_date DESC");
-    $pstmt->bind_param('i', $booking_id);
-    $pstmt->execute();
-    $payments = $pstmt->get_result()->fetch_all(MYSQLI_ASSOC);
-}
+$details = $receipt_data['details'];
+$payments = $receipt_data['payments'];
 ?>
 <!DOCTYPE html>
 <html>
