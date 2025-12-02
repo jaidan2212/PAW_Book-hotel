@@ -14,7 +14,6 @@ if (!$data) {
 
 $success = $error = "";
 
-// PROSES UPDATE
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $room_number = $_POST['room_number'];
@@ -25,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status      = $_POST['status'];
     $stock       = $_POST['stock'];
 
-    // Upload gambar (opsional)
     $imageName = $data['image'];
     if (!empty($_FILES['image']['name'])) {
         $imageName = basename($_FILES['image']['name']);
@@ -33,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         move_uploaded_file($_FILES['image']['tmp_name'], $targetPath);
     }
 
-    // FIXED BIND PARAM
     $stmt = $mysqli->prepare("
         UPDATE rooms 
         SET room_number=?, type=?, price=?, max_person=?, description=?, image=?, status=?, stock=?
@@ -41,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ");
 
     $stmt->bind_param(
-        "ssdisssii",   // tipe data YANG BENAR
+        "ssdisssii",
         $room_number,
         $type,
         $price,
@@ -172,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <button class="btn btn-primary">Simpan Perubahan</button>
-                <a href="dashboard.php?page=rooms" class="btn btn-secondary">Kembali</a>
+                <a href="../dashboard.php" class="btn btn-secondary">Kembali</a>
 
             </form>
 
