@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <button class="btn btn-primary">Simpan</button>
-        <a href="rooms.php" class="btn btn-secondary">Kembali</a>
+        <a href="dashboard.php?page=home.php" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 

@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <button class="btn btn-primary">Simpan Perubahan</button>
-                <a href="../dashboard.php" class="btn btn-secondary">Kembali</a>
+                <a href="../dashboard.php?page=rooms_edit" class="btn btn-secondary">Kembali</a>
 
             </form>
 

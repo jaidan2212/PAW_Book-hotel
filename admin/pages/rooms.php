@@ -41,12 +41,9 @@ $result = $mysqli->query("SELECT * FROM rooms ORDER BY id ASC");
                         <td><?= $r['status'] ?></td>
                         <td>
                             <a href="pages/room_edit.php?id=<?= $r['id'] ?>" class="btn btn-sm btn-primary">Edit</a>
-                            <a href="pages/delete_room.php?id=<?= $row['id']; ?>"
-                                onclick="return confirm('Yakin ingin menghapus kamar ini?');"
-                                class="btn btn-danger btn-sm">
-                                Delete
-                            </a>
-
+                            <a href="pages/delete_room.php?id=<?= $r['id'] ?>"
+                                onclick="return confirm('Yakin ingin menghapus?')"
+                                class="btn btn-danger">Hapus</a>
                         </td>
                     </tr>
                 <?php endwhile; ?>
