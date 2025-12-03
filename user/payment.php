@@ -76,7 +76,7 @@ $payments = $receipt_data['payments'];
 
       <?php if ($booking['status'] === 'paid'): ?>
         <div id="receipt-area">
-          <h3>Pembayaran akan segara dikonfirmkasi Nota Tersedia</h3>
+          <h3>Pembayaran akan segara dikonfirmasi - Nota Tersedia</h3>
           <p class="text-success">Pembayaran Anda telah dikonfirmasi oleh admin. Nota ini dapat dicetak sebagai bukti pembayaran.</p>
 
           <h6>Detail Kamar</h6>
