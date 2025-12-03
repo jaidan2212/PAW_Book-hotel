@@ -76,7 +76,7 @@ $payments = $receipt_data['payments'];
 
       <?php if ($booking['status'] === 'paid'): ?>
         <div id="receipt-area">
-          <h3>✅ Pembayaran Dikonfirmasi - Nota Tersedia</h3>
+          <h3>Pembayaran akan segara dikonfirmkasi Nota Tersedia</h3>
           <p class="text-success">Pembayaran Anda telah dikonfirmasi oleh admin. Nota ini dapat dicetak sebagai bukti pembayaran.</p>
 
           <h6>Detail Kamar</h6>
@@ -148,10 +148,12 @@ $payments = $receipt_data['payments'];
             <?= csrf_input_field() ?>
             <input type="hidden" name="booking_id" value="<?= (int)$booking['id'] ?>">
 
-            <div class="col-12 col-md-4">
-              <label class="form-label">Jumlah Bayar</label>
-              <input class="form-control" type="number" name="amount" value="<?= htmlspecialchars($booking['total_amount'], ENT_QUOTES, 'UTF-8') ?>" required>
-            </div>
+<div class="col-12 col-md-4">
+  <label class="form-label">Jumlah Bayar</label>
+  <input class="form-control" type="number" name="amount" 
+         value="<?= htmlspecialchars($booking['total_amount'], ENT_QUOTES, 'UTF-8') ?>" 
+         readonly>
+</div>
 
             <div class="col-12 col-md-4">
               <label class="form-label">Metode Pembayaran</label>
