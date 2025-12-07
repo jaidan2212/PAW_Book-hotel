@@ -4,7 +4,6 @@ require_once 'functions.php';
 require_once __DIR__ . '/../layout/path.php';
 include __DIR__ . '/../layout/navbar.php';
 
-
 $booking_id = isset($_GET['booking_id']) ? (int)$_GET['booking_id'] : 0;
 if (!$booking_id) {
     echo "Booking tidak ditemukan.";
@@ -21,7 +20,6 @@ if (!$booking) {
 }
 
 $receipt_data = get_receipt_data($mysqli, $booking_id, $booking['status']);
-
 $details = $receipt_data['details'];
 $payments = $receipt_data['payments'];
 ?>
@@ -68,16 +66,20 @@ $payments = $receipt_data['payments'];
         </div>
         <div class="col-md-6 text-md-end">
           <strong>Tanggal:</strong> <?= htmlspecialchars($booking['checkin_date'], ENT_QUOTES, 'UTF-8') ?> → <?= htmlspecialchars($booking['checkout_date'], ENT_QUOTES, 'UTF-8') ?><br>
-          <strong>Status:</strong> <span class="badge bg-<?= $booking['status'] === 'paid' ? 'success' : ($booking['status'] === 'pending' ? 'warning' : 'danger') ?>"><?= htmlspecialchars($booking['status'], ENT_QUOTES, 'UTF-8') ?></span>
+          <strong>Status:</strong>
+          <span class="badge bg-<?= $booking['status'] === 'paid' ? 'success' : ($booking['status'] === 'pending' ? 'warning' : 'danger') ?>">
+            <?= htmlspecialchars($booking['status'], ENT_QUOTES, 'UTF-8') ?>
+          </span>
         </div>
       </div>
       
       <hr>
 
       <?php if ($booking['status'] === 'paid'): ?>
+
         <div id="receipt-area">
-          <h3>Pembayaran akan segara dikonfirmasi - Nota Tersedia</h3>
-          <p class="text-success">Pembayaran Anda telah dikonfirmasi oleh admin. Nota ini dapat dicetak sebagai bukti pembayaran.</p>
+          <h3>✅ Pembayaran Dikonfirmasi - Nota Tersedia</h3>
+          <p class="text-success">Pembayaran Anda telah dikonfirmasi oleh admin.</p>
 
           <h6>Detail Kamar</h6>
           <div class="table-responsive">
@@ -132,28 +134,37 @@ $payments = $receipt_data['payments'];
             </table>
           <?php endif; ?>
         </div>
-      <?php else: ?>
+
+      <?php elseif ($booking['status'] === 'pending'): ?>
+
         <div class="alert alert-info" role="alert">
           <h3>⏳ Menunggu Konfirmasi Admin</h3>
-          <p>Pembayaran Anda telah diterima, namun nota pembayaran baru dapat dicetak setelah admin mengkonfirmasi pembayaran Anda. Silakan tunggu.</p>
+          <p>Pembayaran Anda sedang diproses admin.</p>
         </div>
+
+      <?php else: ?>
+
+        <div class="alert alert-warning">
+          <h3>Pembayaran Belum Dilakukan</h3>
+          Silakan lakukan pembayaran melalui form berikut.
+        </div>
+
       <?php endif; ?>
 
-
       <div class="mt-3 no-print">
-        <?php if ($booking['status'] !== 'paid'): ?>
+
+        <?php if ($booking['status'] === 'unpaid'): ?>
+
           <h4>Konfirmasi Pembayaran</h4>
-          <p class="text-muted">Setelah mengisi formulir ini, pembayaran akan menunggu konfirmasi admin.</p>
           <form action="process_payment.php" method="post" class="row g-2">
             <?= csrf_input_field() ?>
             <input type="hidden" name="booking_id" value="<?= (int)$booking['id'] ?>">
 
-<div class="col-12 col-md-4">
-  <label class="form-label">Jumlah Bayar</label>
-  <input class="form-control" type="number" name="amount" 
-         value="<?= htmlspecialchars($booking['total_amount'], ENT_QUOTES, 'UTF-8') ?>" 
-         readonly>
-</div>
+            <div class="col-12 col-md-4">
+              <label class="form-label">Jumlah Bayar</label>
+              <input class="form-control" type="number" name="amount"
+                     value="<?= htmlspecialchars($booking['total_amount'], ENT_QUOTES, 'UTF-8') ?>">
+            </div>
 
             <div class="col-12 col-md-4">
               <label class="form-label">Metode Pembayaran</label>
@@ -170,15 +181,24 @@ $payments = $receipt_data['payments'];
 
             <div class="col-12">
               <button class="btn btn-success">Saya Sudah Bayar</button>
-              <small class="text-muted ms-3">Admin akan mengkonfirmasi setelah Anda menekan tombol ini.</small>
             </div>
           </form>
+
+        <?php elseif ($booking['status'] === 'pending'): ?>
+
+          <div class="alert alert-info">
+            Pembayaran menunggu konfirmasi admin.
+          </div>
+
         <?php else: ?>
+
           <div class="d-flex gap-2">
             <a href="../index.php" class="btn btn-outline-primary">Kembali</a>
             <button class="btn btn-primary" onclick="window.print()">🖨️ Cetak Nota</button>
           </div>
+
         <?php endif; ?>
+
       </div>
 
     </div>

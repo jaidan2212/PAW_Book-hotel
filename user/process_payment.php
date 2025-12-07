@@ -16,58 +16,79 @@ $amount = (float)$_POST['amount'];
 $method = $_POST['method'] ?? 'Cash';
 $note = $_POST['note'] ?? '';
 
+$allowed = ['Cash', 'Transfer', 'QRIS'];
+if (!in_array($method, $allowed)) {
+    die('Metode pembayaran tidak valid.');
+}
+
+if ($amount <= 0) {
+    die('Jumlah pembayaran tidak valid.');
+}
+
 $mysqli->begin_transaction();
+
 try {
+    $stmt = $mysqli->prepare("SELECT total_amount FROM bookings WHERE id = ?");
+    $stmt->bind_param('i', $booking_id);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+
+    if (!$row) {
+        throw new Exception("Booking tidak ditemukan.");
+    }
+
+    $total_amount = (float)$row['total_amount'];
+
+    $rooms = $mysqli->prepare("SELECT room_id, quantity FROM booking_rooms WHERE booking_id = ?");
+    $rooms->bind_param('i', $booking_id);
+    $rooms->execute();
+    $resRooms = $rooms->get_result();
+
+    if ($resRooms->num_rows === 0) {
+        throw new Exception("Tidak ada kamar untuk booking ini.");
+    }
+
     $ins = $mysqli->prepare("INSERT INTO payments (booking_id, amount, method, note) VALUES (?, ?, ?, ?)");
     $ins->bind_param('idss', $booking_id, $amount, $method, $note);
     $ins->execute();
 
-    $stmt = $mysqli->prepare("SELECT total_amount FROM bookings WHERE id=?");
-    $stmt->bind_param('i',$booking_id);
-    $stmt->execute();
-    $tot = $stmt->get_result()->fetch_assoc();
-    $total_amount = (float)$tot['total_amount'];
-
     if ($amount >= $total_amount) {
-        $up = $mysqli->prepare("UPDATE bookings SET status='paid' WHERE id=?");
-        if (!$up) throw new Exception('Prepare update bookings failed: ' . $mysqli->error);
-        $up->bind_param('i',$booking_id);
-        if (!$up->execute()) throw new Exception('Update bookings failed: ' . $up->error);
+        $up = $mysqli->prepare("UPDATE bookings SET status='pending' WHERE id = ?");
+        $up->bind_param('i', $booking_id);
+        $up->execute();
 
-        $hasStock = false;
         $chk = $mysqli->query("SHOW COLUMNS FROM rooms LIKE 'stock'");
-        if ($chk && $chk->num_rows > 0) $hasStock = true;
+        $hasStock = ($chk && $chk->num_rows > 0);
 
-        $q = $mysqli->prepare("SELECT room_id, quantity FROM booking_rooms WHERE booking_id = ?");
-        if (!$q) throw new Exception('Prepare select booking_rooms failed: ' . $mysqli->error);
-        $q->bind_param('i', $booking_id);
-        $q->execute();
-        $resRooms = $q->get_result();
         while ($rr = $resRooms->fetch_assoc()) {
             $rid = (int)$rr['room_id'];
-            $qty = isset($rr['quantity']) ? (int)$rr['quantity'] : 1;
+            $qty = (int)$rr['quantity'];
 
             if ($hasStock) {
                 $upd = $mysqli->prepare("UPDATE rooms SET stock = GREATEST(stock - ?, 0) WHERE id = ?");
-                if (!$upd) throw new Exception('Prepare update stock failed: ' . $mysqli->error);
                 $upd->bind_param('ii', $qty, $rid);
-                if (!$upd->execute()) throw new Exception('Update stock failed for room ' . $rid . ': ' . $upd->error);
+                $upd->execute();
 
-                $upr2 = $mysqli->prepare("UPDATE rooms SET status='booked' WHERE id = ? AND stock = 0");
-                if (!$upr2) throw new Exception('Prepare update room status failed: ' . $mysqli->error);
-                $upr2->bind_param('i', $rid);
-                if (!$upr2->execute()) throw new Exception('Update room status failed for room ' . $rid . ': ' . $upr2->error);
+                $statusCheck = $mysqli->prepare("SELECT stock FROM rooms WHERE id = ?");
+                $statusCheck->bind_param('i', $rid);
+                $statusCheck->execute();
+                $s = $statusCheck->get_result()->fetch_assoc();
+
+                if ($s['stock'] == 0) {
+                    $upr2 = $mysqli->prepare("UPDATE rooms SET status='booked' WHERE id = ?");
+                    $upr2->bind_param('i', $rid);
+                    $upr2->execute();
+                }
             } else {
-                $upr = $mysqli->prepare("UPDATE rooms SET status='booked' WHERE id=?");
-                if (!$upr) throw new Exception('Prepare update rooms failed: ' . $mysqli->error);
+                $upr = $mysqli->prepare("UPDATE rooms SET status='booked' WHERE id = ?");
                 $upr->bind_param('i', $rid);
-                if (!$upr->execute()) throw new Exception('Update room status failed for room ' . $rid . ': ' . $upr->error);
+                $upr->execute();
             }
         }
     }
 
     $mysqli->commit();
-    header("Location: payment.php?booking_id=".$booking_id);
+    header("Location: payment.php?booking_id=" . $booking_id);
     exit;
 
 } catch (Exception $e) {

@@ -2,7 +2,7 @@ Ainur Raftuzzaki – 240411100034 - Username = AinurRaftuzzaki
 
 Muhammad Izzul Millah Aqil – 240411100087 - Username = Izzulgtg 
 
-Verdi Setyawan Ardiansyah Putra – 240411100100 - Username = 
+Verdi Setyawan Ardiansyah Putra – 240411100100 - Username = GREED2308
 
 Muhammad Zaidan Nabil Rafi – 240411100068 Username = jaidan2212
 
